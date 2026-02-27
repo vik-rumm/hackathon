@@ -98,10 +98,23 @@
                 aria-label="Search"
               />
             </div>
-            <button class="icon-btn" type="button" aria-label="Notifications">
+            <div class="notif">
+              <button class="icon-btn" id="btnNotif" type="button" aria-label="Notifications">
               <i data-lucide="bell"></i>
-              <span class="dot" aria-hidden="true"></span>
-            </button>
+                <span class="dot" id="notifDot" aria-hidden="true"></span>
+              </button>
+              <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications" aria-hidden="true">
+                <div class="notif-panel__head">
+                  <div class="notif-panel__title">Notifications</div>
+                  <button class="link-btn" id="btnNotifClear" type="button">
+                    Clear
+                    <i data-lucide="trash-2"></i>
+                  </button>
+                </div>
+                <div class="notif-panel__list" id="notifList"></div>
+                <div class="notif-panel__foot muted" id="notifFoot">You’re all caught up.</div>
+              </div>
+            </div>
             <button class="avatar" id="avatarBtn" type="button" aria-label="Open profile">
               <div class="avatar__ring"></div>
               <div class="avatar__initials" id="avatarInitials">PC</div>
@@ -522,37 +535,102 @@
         </section>
 
         <section class="route" id="route-transactions" data-route="transactions">
-          <div class="card reveal">
-            <div class="card__head">
-              <div>
-                <div class="card__eyebrow">Transactions</div>
-                <div class="card__title">Coming Soon</div>
+          <div class="grid grid--tx">
+            <section class="card reveal" aria-label="Category-wise transactions">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Transactions</div>
+                  <div class="card__title">Category Split</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="filter"></i>
+                  Filters
+                </div>
               </div>
-              <div class="hint">
-                <i data-lucide="clock"></i>
-                Hackathon-ready scaffold
+
+              <div class="tx-filters">
+                <div class="tx-filters__row">
+                  <div class="field">
+                    <label class="field__label" for="txType">Type</label>
+                    <select class="input input--select" id="txType">
+                      <option value="all">All</option>
+                      <option value="expense">Expenses</option>
+                      <option value="investment">Investments</option>
+                      <option value="income">Income</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="txCategory">Category</label>
+                    <select class="input input--select" id="txCategory">
+                      <option value="all">All categories</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="tx-summary" id="txSummary"></div>
               </div>
-            </div>
-            <p class="muted">
-              This page is a placeholder so your navigation feels complete. If you want, I can extend it with a searchable
-              transaction table + filters.
-            </p>
+
+              <div class="tx-cats" id="txCats" aria-label="Category totals"></div>
+            </section>
+
+            <section class="card reveal" aria-label="Transaction history">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">History</div>
+                  <div class="card__title">Date-wise Timeline</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="calendar"></i>
+                  Latest first
+                </div>
+              </div>
+
+              <div class="tx-history" id="txHistory"></div>
+            </section>
           </div>
         </section>
 
         <section class="route" id="route-subscriptions" data-route="subscriptions">
-          <div class="card reveal">
-            <div class="card__head">
-              <div>
-                <div class="card__eyebrow">Subscriptions</div>
-                <div class="card__title">Coming Soon</div>
+          <div class="grid grid--subs">
+            <section class="card reveal" aria-label="All subscriptions">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Subscriptions</div>
+                  <div class="card__title">All Apps</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="repeat"></i>
+                  Monthly
+                </div>
               </div>
-              <div class="hint">
-                <i data-lucide="repeat"></i>
-                Reduce recurring leaks
+
+              <div class="subs-page__top">
+                <div class="subs-page__total">
+                  <div class="subs-page__k">Total / month</div>
+                  <div class="subs-page__v" id="subsPageTotal">—</div>
+                  <div class="subs-page__s muted" id="subsPageAnnual">—</div>
+                </div>
+                <div class="subs-page__hint muted">
+                  Tip: cancel 1 low-value subscription to instantly improve your health score.
+                </div>
               </div>
-            </div>
-            <p class="muted">For now, subscriptions are visible on the Dashboard. This route is ready to expand.</p>
+
+              <div class="subs-page__list" id="subsPageList"></div>
+            </section>
+
+            <section class="card reveal" aria-label="Subscription insights">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Insights</div>
+                  <div class="card__title">AI Suggestions</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="sparkles"></i>
+                  Optimize
+                </div>
+              </div>
+
+              <div class="insights" id="subsInsights"></div>
+            </section>
           </div>
         </section>
 
@@ -573,18 +651,99 @@
         </section>
 
         <section class="route" id="route-settings" data-route="settings">
-          <div class="card reveal">
-            <div class="card__head">
-              <div>
-                <div class="card__eyebrow">Settings</div>
-                <div class="card__title">Coming Soon</div>
+          <div class="grid grid--settings">
+            <section class="card reveal" aria-label="Theme settings">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Appearance</div>
+                  <div class="card__title">Theme</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="palette"></i>
+                  Dark / Bright
+                </div>
               </div>
-              <div class="hint">
-                <i data-lucide="settings"></i>
-                Personalize
+
+              <div class="segmented" role="radiogroup" aria-label="Theme mode">
+                <button class="segmented__btn" id="themeDark" type="button" role="radio" aria-checked="true">
+                  <i data-lucide="moon"></i>
+                  Dark
+                </button>
+                <button class="segmented__btn" id="themeLight" type="button" role="radio" aria-checked="false">
+                  <i data-lucide="sun"></i>
+                  Bright
+                </button>
               </div>
-            </div>
-            <p class="muted">Hook up currency, budget targets, and AI preferences here.</p>
+
+              <div class="muted" style="margin-top:10px; line-height:1.5">
+                Bright mode improves readability in daylight. Dark mode is designed for a futuristic dashboard feel.
+              </div>
+            </section>
+
+            <section class="card reveal" aria-label="Help and contact">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Help</div>
+                  <div class="card__title">Contact</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="help-circle"></i>
+                  Support
+                </div>
+              </div>
+
+              <div class="contact">
+                <div class="contact__row">
+                  <div class="contact__k"><i data-lucide="phone"></i> Phone</div>
+                  <div class="contact__v">123-xxx-567</div>
+                </div>
+                <div class="contact__row">
+                  <div class="contact__k"><i data-lucide="mail"></i> Gmail</div>
+                  <div class="contact__v">abcxx@gmail.com</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card reveal" aria-label="Feedback">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Feedback</div>
+                  <div class="card__title">Rate & Tell Us</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="star"></i>
+                  5-star
+                </div>
+              </div>
+
+              <form class="form" id="feedbackForm">
+                <div class="field">
+                  <label class="field__label">Rating</label>
+                  <div class="stars" id="feedbackStars" aria-label="Rate from 1 to 5">
+                    <button class="star" type="button" data-star="1" aria-label="1 star"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="2" aria-label="2 stars"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="3" aria-label="3 stars"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="4" aria-label="4 stars"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="5" aria-label="5 stars"><i data-lucide="star"></i></button>
+                  </div>
+                  <input type="hidden" id="feedbackRating" value="0" />
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="feedbackText">Your opinion</label>
+                  <textarea class="input input--textarea" id="feedbackText" rows="4" placeholder="What did you like? What should we improve?"></textarea>
+                </div>
+
+                <div class="form__actions">
+                  <button class="btn" type="submit">
+                    <i data-lucide="send"></i>
+                    Submit feedback
+                  </button>
+                </div>
+
+                <div class="form__hint muted" id="feedbackHint">Thanks — your feedback helps improve the product.</div>
+              </form>
+            </section>
           </div>
         </section>
 
@@ -694,5 +853,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
     <script src="./app.js"></script>
+
+    <div class="toasts" id="toasts" aria-live="polite" aria-label="Notifications"></div>
   </body>
 </html>
