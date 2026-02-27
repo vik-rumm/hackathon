@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Money Coach | Personal Finance Dashboard</title>
+    <meta name="description" content="A modern AI-powered personal finance web application dashboard.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fa-solid fa-robot logo-icon"></i>
+                    <h2><span class="gradient-text">AI</span> Money Coach</h2>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fa-solid fa-wallet"></i> Transactions</a></li>
+                    <li><a href="#"><i class="fa-solid fa-repeat"></i> Subscriptions</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chart-line"></i> Investments</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <ul>
+                    <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="welcome-text">
+                    <h1>Welcome back, <span class="gradient-text">Alex</span></h1>
+                    <p>Here's your financial overview for the month.</p>
+                </div>
+                <div class="user-profile">
+                    <div class="notification-bell">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="badge"></span>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Alex+D&background=random&color=fff" alt="User Avatar" class="avatar">
+                </div>
+            </header>
+
+            <div class="dashboard-grid">
+                
+                <!-- Health Score & AI Summary Col (Left) -->
+                <div class="grid-col layout-left">
+                    <!-- Health Score Chart -->
+                    <div class="card health-card neon-border">
+                        <div class="card-header">
+                            <h3>Financial Health Score</h3>
+                            <i class="fa-solid fa-circle-info text-muted"></i>
+                        </div>
+                        <div class="health-score-container">
+                            <div class="circular-progress" id="healthProgress">
+                                <span class="score-value">85</span>
+                            </div>
+                            <p class="score-label text-success">Excellent Standing</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Summary -->
+                    <div class="card ai-summary-card glassmorphism">
+                        <div class="card-header">
+                            <h3 class="gradient-text"><i class="fa-solid fa-sparkles"></i> AI Insights</h3>
+                        </div>
+                        <div class="summary-content">
+                            <p>You're on track to save <strong class="highlight">$450</strong> more this month compared to last month. Consider moving <strong class="highlight">$200</strong> from your idle cash to your investment portfolio to maximize returns.</p>
+                        </div>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-icon income-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Income</span>
+                                <h4 class="stat-amount">$6,240</h4>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon expense-icon"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">Total Expenses</span>
+                                <h4 class="stat-amount">$3,120</h4>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon investment-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-label">Investments</span>
+                                <h4 class="stat-amount">$1,500</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Budget Tracker -->
+                    <div class="card budget-card">
+                        <div class="card-header">
+                            <h3>Monthly Budget Tracker</h3>
+                            <span>$2,500 / $3,000</span>
+                        </div>
+                        <div class="progress-wrapper">
+                            <div class="progress-bar-container">
+                                <div class="progress-bar warning" style="width: 83%"></div>
+                            </div>
+                        </div>
+                        <div class="budget-alert warning-alert">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <p>Alert: You have reached 83% of your monthly budget. $500 remaining.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts & Trackers Col (Middle) -->
+                <div class="grid-col layout-middle">
+                    <!-- Investment vs Expense Comparison -->
+                    <div class="card comparison-card">
+                        <div class="card-header">
+                            <h3>Investment vs Expense</h3>
+                            <select class="custom-select">
+                                <option>This Year</option>
+                                <option>Last 6 Months</option>
+                            </select>
+                        </div>
+                        <div class="chart-container custom-height-bar">
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Expense Breakdown Section -->
+                    <div class="card expense-breakdown-card">
+                        <div class="card-header">
+                            <h3>Expense Breakdown</h3>
+                        </div>
+                        <div class="pie-chart-container">
+                            <div class="chart-wrapper">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                            <!-- Legend will be generated by Chart.js or HTML -->
+                            <div id="expenseLegend" class="chart-legend"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Col (Subscriptions, Upload, Chat) -->
+                <div class="grid-col layout-right">
+                    
+                    <!-- Subscription Tracker -->
+                    <div class="card subscription-card">
+                        <div class="card-header">
+                            <h3>Active Subscriptions</h3>
+                            <span class="total-subs">$85/mo</span>
+                        </div>
+                        <div class="subscription-list">
+                            <div class="sub-item">
+                                <div class="sub-info">
+                                    <div class="sub-icon netflix"><i class="fa-solid fa-n"></i></div>
+                                    <div class="sub-name">Netflix</div>
+                                </div>
+                                <div class="sub-price">$15.99</div>
+                            </div>
+                            <div class="sub-item">
+                                <div class="sub-info">
+                                    <div class="sub-icon spotify"><i class="fa-brands fa-spotify"></i></div>
+                                    <div class="sub-name">Spotify</div>
+                                </div>
+                                <div class="sub-price">$9.99</div>
+                            </div>
+                            <div class="sub-item">
+                                <div class="sub-info">
+                                    <div class="sub-icon gym"><i class="fa-solid fa-dumbbell"></i></div>
+                                    <div class="sub-name">Gym Membership</div>
+                                </div>
+                                <div class="sub-price">$45.00</div>
+                            </div>
+                            <div class="sub-item">
+                                <div class="sub-info">
+                                    <div class="sub-icon prime"><i class="fa-brands fa-amazon"></i></div>
+                                    <div class="sub-name">Amazon Prime</div>
+                                </div>
+                                <div class="sub-price">$14.99</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Upload Section -->
+                    <div class="card upload-card">
+                        <div class="card-header">
+                            <h3>Document AI Analysis</h3>
+                        </div>
+                        <div class="upload-area" id="dropZone">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <p>Drag & Drop or Click to Upload</p>
+                            <div class="upload-buttons">
+                                <button class="btn btn-outline"><i class="fa-solid fa-file-pdf"></i> PDF Statement</button>
+                                <button class="btn btn-outline"><i class="fa-solid fa-image"></i> Bill Screenshot</button>
+                            </div>
+                        </div>
+                        <div class="upload-status hidden" id="uploadStatus">
+                            <div class="spinner"></div>
+                            <p class="gradient-text">AI analyzing document...</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Chat Assistant Section -->
+                    <div class="card chat-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-robot"></i> AI Financial Assistant</h3>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message ai-message">
+                                <div class="avatar-small"><i class="fa-solid fa-robot"></i></div>
+                                <div class="bubble">Hello Alex! How can I help you with your finances today?</div>
+                            </div>
+                            <!-- Example suggestions as chat pills -->
+                            <div class="chat-suggestions">
+                                <button class="suggestion-btn">Where am I overspending?</button>
+                                <button class="suggestion-btn">Can I afford a new phone?</button>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chatInput" placeholder="Ask anything about your money...">
+                            <button class="btn-send"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
