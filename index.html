@@ -187,55 +187,33 @@
 
                 <form class="form ig-form" id="loginForm">
                   <div class="field">
-                    <label class="field__label" for="loginIdentifier">Email or mobile number</label>
-                    <input
-                      class="input"
-                      id="loginIdentifier"
-                      type="text"
-                      placeholder="you@example.com or 98765xxxxx"
-                      autocomplete="username"
-                      required
-                    />
+                    <label class="field__label" for="loginEmail">Email</label>
+                    <input class="input" id="loginEmail" type="email" placeholder="Email" autocomplete="email" required />
                   </div>
                   <div class="field">
-                    <label class="field__label" for="loginOtp">One-time password</label>
-                    <div class="manual-entry__row">
-                      <input
-                        class="input"
-                        id="loginOtp"
-                        type="text"
-                        inputmode="numeric"
-                        pattern="[0-9]*"
-                        maxlength="6"
-                        placeholder="Enter 6-digit OTP"
-                        required
-                      />
-                      <button class="btn btn--secondary" id="btnSendOtp" type="button">
-                        <i data-lucide="message-circle"></i>
-                        Send OTP
-                      </button>
-                    </div>
+                    <label class="field__label" for="loginPassword">Password</label>
+                    <input class="input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" required />
                   </div>
 
                   <div class="form__error" id="loginError" role="alert" aria-live="polite"></div>
 
                   <button class="btn btn--block" id="btnLogin" type="submit">
                     <i data-lucide="log-in"></i>
-                    Verify & Continue
+                    Log in
                   </button>
 
-                  <button class="text-link" id="btnForgot" type="button">Login help</button>
+                  <button class="text-link" id="btnForgot" type="button">Forgot password?</button>
 
                   <div class="form__hint muted" id="loginHint">
-                    OTP is generated and stored on this device for now. For production, connect an SMS/email service.
+                    This is a front-end login only. Your profile + data are stored in this browser.
                   </div>
                 </form>
               </div>
 
               <div class="ig-box ig-box--thin">
                 <div class="ig-signup">
-                  <span>First time here?</span>
-                  <button class="text-link text-link--accent" id="btnSignup" type="button">Create / switch account</button>
+                  <span>Don’t have an account?</span>
+                  <button class="text-link text-link--accent" id="btnSignup" type="button">Sign up</button>
                 </div>
               </div>
             </div>
