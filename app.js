@@ -12,6 +12,7 @@
     }).format(Math.round(n));
   const fmtPct = (n) => `${(n * 100).toFixed(0)}%`;
   const nowStamp = () => new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  const APP_KEY = "amc";
 
   // -----------------------------
   // Demo finance model
@@ -57,6 +58,67 @@
 
   /** @type {ReturnType<typeof DEFAULT_DATA>} */
   let model = DEFAULT_DATA();
+
+  // -----------------------------
+  // Demo auth (localStorage)
+  // -----------------------------
+  const storage = {
+    get(k) {
+      try {
+        return localStorage.getItem(`${APP_KEY}:${k}`);
+      } catch {
+        return null;
+      }
+    },
+    set(k, v) {
+      try {
+        localStorage.setItem(`${APP_KEY}:${k}`, v);
+      } catch {
+        // ignore
+      }
+    },
+    del(k) {
+      try {
+        localStorage.removeItem(`${APP_KEY}:${k}`);
+      } catch {
+        // ignore
+      }
+    },
+  };
+
+  function getUser() {
+    const raw = storage.get("user");
+    if (!raw) return null;
+    try {
+      const u = JSON.parse(raw);
+      if (!u || typeof u !== "object") return null;
+      if (!u.email) return null;
+      return u;
+    } catch {
+      return null;
+    }
+  }
+
+  function setUser(user) {
+    storage.set("user", JSON.stringify(user));
+  }
+
+  function clearUser() {
+    storage.del("user");
+  }
+
+  function isAuthed() {
+    return !!getUser();
+  }
+
+  function initialsFrom(nameOrEmail) {
+    const s = String(nameOrEmail || "").trim();
+    if (!s) return "MC";
+    const parts = s.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    if (s.includes("@")) return s[0].toUpperCase();
+    return s.slice(0, 2).toUpperCase();
+  }
 
   // -----------------------------
   // Chart.js instances
@@ -180,6 +242,12 @@
   function setHTML(id, html) {
     const el = $(id);
     if (el) el.innerHTML = html;
+  }
+
+  function setAuthMode(on) {
+    const app = document.querySelector(".app");
+    if (!app) return;
+    app.classList.toggle("is-auth", on);
   }
 
   function setRingProgress(score) {
@@ -406,6 +474,20 @@
     setText("buildStamp", `Updated ${nowStamp()}`);
   }
 
+  function renderProfile() {
+    const u = getUser();
+    if (!u) return;
+    const name = u.name || u.email.split("@")[0];
+    setText("profileName", name);
+    setText("profileEmail", u.email);
+    setText("profileInitials", initialsFrom(name));
+    const pi = $("profileNameInput");
+    const pe = $("profileEmailInput");
+    if (pi) pi.value = name;
+    if (pe) pe.value = u.email;
+    setText("avatarInitials", initialsFrom(name));
+  }
+
   // -----------------------------
   // Upload simulation
   // -----------------------------
@@ -549,6 +631,13 @@
   // Routing + animations
   // -----------------------------
   function setRoute(route) {
+    // Auth gate
+    const protectedRoutes = new Set(["dashboard", "transactions", "subscriptions", "investments", "settings", "profile"]);
+    if (!isAuthed() && protectedRoutes.has(route)) route = "login";
+    if (isAuthed() && route === "login") route = "dashboard";
+
+    setAuthMode(route === "login");
+
     const title = $("pageTitle");
     if (title) title.textContent = route[0].toUpperCase() + route.slice(1);
 
@@ -563,6 +652,8 @@
     requestAnimationFrame(() => {
       document.querySelectorAll(".route.is-active .reveal").forEach((el) => el.classList.add("is-in"));
     });
+
+    if (route === "profile") renderProfile();
   }
 
   function bootRevealObserver() {
@@ -629,10 +720,78 @@
       b.addEventListener("click", () => setRoute(b.getAttribute("data-route") || "dashboard"));
     });
 
+    // Avatar -> Profile
+    $("avatarBtn")?.addEventListener("click", () => setRoute("profile"));
+
     // Chips
     $("chipRefresh")?.addEventListener("click", () => refreshAI());
     $("btnRegenerateSummary")?.addEventListener("click", () => renderAISummary(model));
     $("chipDemo")?.addEventListener("click", () => loadDemoData());
+
+    // Login (Instagram-like demo)
+    const loginError = $("loginError");
+    const showLoginError = (msg) => {
+      if (!loginError) return;
+      loginError.textContent = msg;
+      loginError.classList.toggle("is-visible", !!msg);
+    };
+
+    $("loginForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = $("loginEmail")?.value?.trim() || "";
+      const pw = $("loginPassword")?.value?.trim() || "";
+      if (!email || !pw) {
+        showLoginError("Please enter email and password.");
+        return;
+      }
+      if (!/^\S+@\S+\.\S+$/.test(email)) {
+        showLoginError("Please enter a valid email address.");
+        return;
+      }
+      showLoginError("");
+      setUser({ email, name: email.split("@")[0] });
+      renderProfile();
+      setUploadStatus("", "Signed in. Welcome back.");
+      setRoute("dashboard");
+    });
+
+    $("btnDemoLogin")?.addEventListener("click", () => {
+      showLoginError("");
+      setUser({ email: "demo@aimoneycoach.app", name: "Demo User" });
+      renderProfile();
+      loadDemoData();
+      setRoute("dashboard");
+    });
+
+    $("btnForgot")?.addEventListener("click", () => {
+      showLoginError("Demo app: password reset isn’t enabled. Use “Continue with demo”.");
+    });
+
+    $("btnSignup")?.addEventListener("click", () => {
+      showLoginError("Demo app: sign up isn’t enabled. Use “Continue with demo”.");
+    });
+
+    // Profile save + logout
+    $("profileForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = $("profileNameInput")?.value?.trim() || "";
+      const email = $("profileEmailInput")?.value?.trim() || "";
+      if (!email || !/^\S+@\S+\.\S+$/.test(email)) return;
+      setUser({ email, name: name || email.split("@")[0] });
+      renderProfile();
+      const hint = $("profileSavedHint");
+      if (hint) hint.textContent = "Saved. Updated locally.";
+      setTimeout(() => {
+        const h = $("profileSavedHint");
+        if (h) h.textContent = "Changes save to this browser only.";
+      }, 1200);
+    });
+
+    $("btnLogout")?.addEventListener("click", () => {
+      clearUser();
+      setUploadStatus("", "Signed out.");
+      setRoute("login");
+    });
 
     // Upload buttons
     $("btnUploadPdf")?.addEventListener("click", () => $("filePdf")?.click());
@@ -675,7 +834,13 @@
 
     // Initial render
     renderAll();
-    setRoute("dashboard");
+    // Start on login if signed out
+    if (isAuthed()) {
+      renderProfile();
+      setRoute("dashboard");
+    } else {
+      setRoute("login");
+    }
   }
 
   async function sendChat(text) {

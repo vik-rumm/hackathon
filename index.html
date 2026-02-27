@@ -53,6 +53,10 @@
             <i data-lucide="settings"></i>
             <span>Settings</span>
           </button>
+          <button class="nav__item" data-route="profile" type="button">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+          </button>
         </nav>
 
         <div class="sidebar__footer">
@@ -98,14 +102,124 @@
               <i data-lucide="bell"></i>
               <span class="dot" aria-hidden="true"></span>
             </button>
-            <div class="avatar" aria-label="User profile">
+            <button class="avatar" id="avatarBtn" type="button" aria-label="Open profile">
               <div class="avatar__ring"></div>
-              <div class="avatar__initials">PC</div>
-            </div>
+              <div class="avatar__initials" id="avatarInitials">PC</div>
+            </button>
           </div>
         </header>
 
         <!-- ROUTES -->
+        <section class="route" id="route-login" data-route="login">
+          <div class="ig-shell reveal" aria-label="Login">
+            <div class="ig-phone" aria-hidden="true">
+              <div class="ig-phone__frame">
+                <div class="ig-phone__screen">
+                  <div class="ig-phone__glow"></div>
+                  <div class="ig-phone__header">
+                    <div class="ig-phone__logo">AI Money Coach</div>
+                    <div class="ig-phone__chip">
+                      <i data-lucide="sparkles"></i>
+                      Live insights
+                    </div>
+                  </div>
+                  <div class="ig-phone__cards">
+                    <div class="ig-mini">
+                      <div class="ig-mini__k">Health</div>
+                      <div class="ig-mini__v"><span class="ig-mini__dot"></span> 78</div>
+                    </div>
+                    <div class="ig-mini">
+                      <div class="ig-mini__k">Budget</div>
+                      <div class="ig-mini__v"><span class="ig-mini__bar"></span></div>
+                    </div>
+                    <div class="ig-mini">
+                      <div class="ig-mini__k">Subscriptions</div>
+                      <div class="ig-mini__v">₹1,499</div>
+                    </div>
+                  </div>
+                  <div class="ig-phone__feed">
+                    <div class="ig-feed__row">
+                      <div class="ig-feed__badge"></div>
+                      <div class="ig-feed__text">
+                        <div class="ig-feed__line"></div>
+                        <div class="ig-feed__line ig-feed__line--short"></div>
+                      </div>
+                    </div>
+                    <div class="ig-feed__row">
+                      <div class="ig-feed__badge"></div>
+                      <div class="ig-feed__text">
+                        <div class="ig-feed__line"></div>
+                        <div class="ig-feed__line ig-feed__line--short"></div>
+                      </div>
+                    </div>
+                    <div class="ig-feed__row">
+                      <div class="ig-feed__badge"></div>
+                      <div class="ig-feed__text">
+                        <div class="ig-feed__line"></div>
+                        <div class="ig-feed__line ig-feed__line--short"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ig-phone__footer">
+                    <span class="ig-phone__pill">AI • analyzing</span>
+                    <span class="ig-phone__pill ig-phone__pill--alt">Budget: on track</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ig-auth">
+              <div class="ig-box">
+                <div class="ig-brand">
+                  <div class="ig-brand__mark" aria-hidden="true"></div>
+                  <div class="ig-brand__word">AI Money Coach</div>
+                  <div class="ig-brand__sub">Sign in to continue</div>
+                </div>
+
+                <form class="form ig-form" id="loginForm">
+                  <div class="field">
+                    <label class="field__label" for="loginEmail">Email</label>
+                    <input class="input" id="loginEmail" type="email" placeholder="Email" autocomplete="email" required />
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="loginPassword">Password</label>
+                    <input class="input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" required />
+                  </div>
+
+                  <div class="form__error" id="loginError" role="alert" aria-live="polite"></div>
+
+                  <button class="btn btn--block" id="btnLogin" type="submit">
+                    <i data-lucide="log-in"></i>
+                    Log in
+                  </button>
+
+                  <div class="ig-divider" aria-hidden="true">
+                    <span>OR</span>
+                  </div>
+
+                  <button class="btn btn--secondary btn--block" id="btnDemoLogin" type="button">
+                    <i data-lucide="wand-2"></i>
+                    Continue with demo
+                  </button>
+
+                  <button class="text-link" id="btnForgot" type="button">Forgot password?</button>
+
+                  <div class="form__hint muted">
+                    Demo login (no backend). Your session + profile save locally in this browser.
+                  </div>
+                </form>
+              </div>
+
+              <div class="ig-box ig-box--thin">
+                <div class="ig-signup">
+                  <span>Don’t have an account?</span>
+                  <button class="text-link text-link--accent" id="btnSignup" type="button">Sign up</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="route is-active" id="route-dashboard" data-route="dashboard">
           <div class="grid grid--top">
             <!-- Health Score -->
@@ -471,6 +585,94 @@
               </div>
             </div>
             <p class="muted">Hook up currency, budget targets, and AI preferences here.</p>
+          </div>
+        </section>
+
+        <section class="route" id="route-profile" data-route="profile">
+          <div class="grid grid--profile">
+            <section class="card reveal" aria-label="Profile details">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Account</div>
+                  <div class="card__title">Profile</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="user"></i>
+                  Signed in
+                </div>
+              </div>
+
+              <div class="profile">
+                <div class="profile__header">
+                  <div class="profile__avatar" aria-hidden="true">
+                    <div class="profile__avatar-ring"></div>
+                    <div class="profile__avatar-initials" id="profileInitials">—</div>
+                  </div>
+                  <div class="profile__meta">
+                    <div class="profile__name" id="profileName">—</div>
+                    <div class="profile__email" id="profileEmail">—</div>
+                    <div class="profile__pill">
+                      <i data-lucide="sparkles"></i>
+                      <span id="profilePlan">Hackathon Demo</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="profile__grid">
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Persona</div>
+                    <div class="profile-kv__v" id="profilePersona">Balanced Builder</div>
+                  </div>
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Goal</div>
+                    <div class="profile-kv__v" id="profileGoal">Grow emergency fund</div>
+                  </div>
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Primary currency</div>
+                    <div class="profile-kv__v">INR</div>
+                  </div>
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Security</div>
+                    <div class="profile-kv__v">Local demo login</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card reveal" aria-label="Edit profile">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Preferences</div>
+                  <div class="card__title">Update details</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="edit-3"></i>
+                  Local storage
+                </div>
+              </div>
+
+              <form class="form" id="profileForm">
+                <div class="field">
+                  <label class="field__label" for="profileNameInput">Full name</label>
+                  <input class="input" id="profileNameInput" type="text" placeholder="Your name" autocomplete="name" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="profileEmailInput">Email</label>
+                  <input class="input" id="profileEmailInput" type="email" placeholder="you@example.com" autocomplete="email" required />
+                </div>
+                <div class="form__actions">
+                  <button class="btn" id="btnSaveProfile" type="submit">
+                    <i data-lucide="save"></i>
+                    Save profile
+                  </button>
+                  <button class="btn btn--secondary" id="btnLogout" type="button">
+                    <i data-lucide="log-out"></i>
+                    Logout
+                  </button>
+                </div>
+                <div class="form__hint muted" id="profileSavedHint">Changes save to this browser only.</div>
+              </form>
+            </section>
           </div>
         </section>
 
