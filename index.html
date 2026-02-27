@@ -580,8 +580,18 @@
                 </div>
                 <div class="hint">
                   <i data-lucide="calendar"></i>
-                  Latest first
+                  Pick a date
                 </div>
+              </div>
+              <div class="tx-date-filter">
+                <div class="field">
+                  <label class="field__label" for="txDateFilter">Date</label>
+                  <input class="input input--date" id="txDateFilter" type="date" />
+                </div>
+                <button class="chip chip--small" id="txDateClear" type="button">
+                  <i data-lucide="x-circle"></i>
+                  Clear
+                </button>
               </div>
 
               <div class="tx-history" id="txHistory"></div>

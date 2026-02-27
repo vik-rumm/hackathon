@@ -113,6 +113,7 @@
 
   /** @type {ReturnType<typeof DEFAULT_DATA>} */
   let model = DEFAULT_DATA();
+  let currentSearch = "";
 
   // -----------------------------
   // Demo auth (localStorage)
@@ -880,10 +881,17 @@
     const catSel = $("txCategory");
     const type = typeSel?.value || "all";
     const category = catSel?.value || "all";
+    const dateFilter = $("txDateFilter")?.value || "";
+    const q = (currentSearch || "").toLowerCase();
 
     const filtered = tx.filter((t) => {
       if (type !== "all" && t.type !== type) return false;
       if (category !== "all" && t.category !== category) return false;
+      if (dateFilter && String(t.date) !== dateFilter) return false;
+      if (q) {
+        const hay = `${t.merchant || ""} ${t.category || ""}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
       return true;
     });
 
@@ -1031,6 +1039,10 @@
         catSel.appendChild(opt);
       }
     }
+
+    const dateInput = $("txDateFilter");
+    const maxDate = tx.reduce((max, t) => (t.date && String(t.date) > max ? String(t.date) : max), "");
+    if (dateInput && maxDate) dateInput.max = maxDate;
   }
 
   function bootFeedback() {
@@ -1291,6 +1303,12 @@
     // Transactions filters
     $("txType")?.addEventListener("change", () => renderTransactionsPage());
     $("txCategory")?.addEventListener("change", () => renderTransactionsPage());
+    $("txDateFilter")?.addEventListener("change", () => renderTransactionsPage());
+    $("txDateClear")?.addEventListener("click", () => {
+      const d = $("txDateFilter");
+      if (d) d.value = "";
+      renderTransactionsPage();
+    });
 
     // Settings: theme toggles
     $("themeDark")?.addEventListener("click", () => applyTheme("dark"));
@@ -1324,13 +1342,13 @@
       if (e.key !== "Enter") return;
       const q = e.target.value.trim().toLowerCase();
       if (!q) return;
-      const hit = model.subscriptions.find((s) => s.name.toLowerCase().includes(q));
-      if (hit) {
-        setRoute("dashboard");
-        setUploadStatus("is-warn", `Search hit: "${hit.name}" in subscriptions.`);
-      } else {
-        setUploadStatus("is-warn", "No results found (demo search).");
-      }
+      currentSearch = q;
+      setRoute("transactions");
+      $("txType") && (($("txType").value = "all"));
+      $("txCategory") && (($("txCategory").value = "all"));
+      $("txDateFilter") && (($("txDateFilter").value = ""));
+      renderTransactionsPage();
+      pushNotif("Search applied", `Filtered transactions by “${e.target.value.trim()}”.`, "info");
     });
 
     bootRevealObserver();

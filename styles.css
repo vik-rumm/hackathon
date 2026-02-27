@@ -284,6 +284,7 @@ body.theme-light .toast__close{color: rgba(11,16,34,.62)}
 .tx-filters{display:flex; flex-direction:column; gap: 10px; margin-bottom: 10px}
 .tx-filters__row{display:grid; grid-template-columns: 1fr 1fr; gap: 10px}
 .input--select{appearance:none}
+.input--date{appearance:auto}
 .tx-summary{
   padding: 12px;
   border-radius: 16px;
@@ -326,6 +327,13 @@ body.theme-light .tx-cat__count{color: rgba(11,16,34,.55)}
 .tx-cat__amt{font-weight: 900; font-family: "Space Grotesk", Inter, system-ui, sans-serif}
 
 .tx-history{display:flex; flex-direction:column; gap: 12px; max-height: 640px; overflow:auto; padding-right:4px}
+.tx-date-filter{
+  display:flex;
+  align-items:flex-end;
+  gap:10px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
 .tx-day{
   border-radius: 18px;
   border:1px solid rgba(255,255,255,.10);
