@@ -1105,6 +1105,10 @@ canvas{max-width:100%;}
 .muted{color: var(--muted); line-height:1.55}
 .sep{color: rgba(234,240,255,.25); margin: 0 10px}
 
+.profile-edit.is-hidden{
+  display:none;
+}
+
 .route{display:none}
 .route.is-active{display:block}
 
