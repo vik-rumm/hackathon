@@ -13,6 +13,7 @@
   const fmtPct = (n) => `${(n * 100).toFixed(0)}%`;
   const nowStamp = () => new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
   const APP_KEY = "amc";
+  const uid = () => Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
 
   // -----------------------------
   // Demo finance model
@@ -26,6 +27,28 @@
     EMI: "#ffb648",
     Subscriptions: "#7ed8ff",
     Investments: "#2cf2a0",
+  };
+
+  const TX_CATEGORIES = ["Food", "Coffee", "Travel", "Shopping", "Rent", "Split", "EMI", "Subscriptions", "Utilities", "Investment", "Income"];
+  const TX_COLORS = {
+    Food: "#2f8cff",
+    Coffee: "#15e2ff",
+    Travel: "#7c5cff",
+    Shopping: "#ff4d7d",
+    Rent: "#ffb648",
+    Split: "#7ed8ff",
+    EMI: "#ffb648",
+    Subscriptions: "#7ed8ff",
+    Utilities: "#9aa7ff",
+    Investment: "#2cf2a0",
+    Income: "#2f8cff",
+  };
+
+  const isoDateDaysAgo = (daysAgo) => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() - daysAgo);
+    return d.toISOString().slice(0, 10);
   };
 
   const DEFAULT_DATA = () => ({
@@ -47,11 +70,43 @@
     totalInvestments: 18500,
     subscriptions: [
       { name: "Netflix", monthly: 649, icon: "tv" },
+      { name: "Disney+ Hotstar", monthly: 299, icon: "sparkles" },
       { name: "Spotify", monthly: 119, icon: "music" },
-      { name: "Amazon Prime", monthly: 299, icon: "package" },
-      { name: "iCloud+", monthly: 149, icon: "cloud" },
       { name: "YouTube Premium", monthly: 129, icon: "play" },
+      { name: "Amazon Prime", monthly: 299, icon: "package" },
+      { name: "Apple Music", monthly: 99, icon: "headphones" },
+      { name: "Google One", monthly: 130, icon: "cloud" },
+      { name: "iCloud+", monthly: 149, icon: "cloud" },
+      { name: "Swiggy One", monthly: 149, icon: "shopping-bag" },
+      { name: "Zomato Gold", monthly: 199, icon: "utensils" },
       { name: "Notion AI", monthly: 154, icon: "sparkles" },
+    ],
+    transactions: [
+      // Income
+      { id: uid(), date: isoDateDaysAgo(2), type: "income", category: "Income", merchant: "Salary", amount: 105000 },
+      { id: uid(), date: isoDateDaysAgo(7), type: "income", category: "Income", merchant: "Freelance", amount: 15000 },
+
+      // Expenses
+      { id: uid(), date: isoDateDaysAgo(0), type: "expense", category: "Food", merchant: "Lunch", amount: 420 },
+      { id: uid(), date: isoDateDaysAgo(0), type: "expense", category: "Coffee", merchant: "Cafe", amount: 180 },
+      { id: uid(), date: isoDateDaysAgo(1), type: "expense", category: "Travel", merchant: "Metro", amount: 220 },
+      { id: uid(), date: isoDateDaysAgo(1), type: "expense", category: "Shopping", merchant: "Store", amount: 1750 },
+      { id: uid(), date: isoDateDaysAgo(2), type: "expense", category: "Rent", merchant: "Rent", amount: 18000 },
+      { id: uid(), date: isoDateDaysAgo(2), type: "expense", category: "Utilities", merchant: "Electricity", amount: 1420 },
+      { id: uid(), date: isoDateDaysAgo(3), type: "expense", category: "EMI", merchant: "EMI", amount: 8400 },
+      { id: uid(), date: isoDateDaysAgo(3), type: "expense", category: "Split", merchant: "Friends split", amount: 980 },
+      { id: uid(), date: isoDateDaysAgo(4), type: "expense", category: "Food", merchant: "Groceries", amount: 3260 },
+      { id: uid(), date: isoDateDaysAgo(5), type: "expense", category: "Travel", merchant: "Cab", amount: 560 },
+      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "Netflix", amount: 649 },
+      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "Hotstar", amount: 299 },
+      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "Spotify", amount: 119 },
+      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "YouTube Premium", amount: 129 },
+      { id: uid(), date: isoDateDaysAgo(8), type: "expense", category: "Shopping", merchant: "Online", amount: 2899 },
+      { id: uid(), date: isoDateDaysAgo(9), type: "expense", category: "Food", merchant: "Dinner", amount: 780 },
+
+      // Investments
+      { id: uid(), date: isoDateDaysAgo(1), type: "investment", category: "Investment", merchant: "SIP (Index Fund)", amount: 12000 },
+      { id: uid(), date: isoDateDaysAgo(8), type: "investment", category: "Investment", merchant: "Stocks", amount: 6500 },
     ],
     trend: "↑ +6 pts vs last month",
   });
@@ -131,18 +186,74 @@
   // -----------------------------
   // Derived metrics
   // -----------------------------
+  function getTx(m) {
+    return Array.isArray(m.transactions) ? m.transactions : [];
+  }
+
+  function sumTx(list, pred) {
+    let s = 0;
+    for (const t of list) if (pred(t)) s += Number(t.amount || 0) || 0;
+    return s;
+  }
+
+  function deriveBreakdownFromTx(m) {
+    const tx = getTx(m);
+    /** @type {Record<string, number>} */
+    const out = {};
+    for (const k of CATEGORY_ORDER) out[k] = 0;
+    for (const t of tx) {
+      const amt = Number(t.amount || 0) || 0;
+      if (amt <= 0) continue;
+
+      if (t.type === "expense") {
+        if (t.category === "Food") out.Food += amt;
+        else if (t.category === "Coffee") out.Coffee += amt;
+        else if (t.category === "Travel") out.Travel += amt;
+        else if (t.category === "Shopping") out.Shopping += amt;
+        else if (t.category === "EMI") out.EMI += amt;
+        else if (t.category === "Subscriptions") out.Subscriptions += amt;
+        else if (t.category === "Rent") out.EMI += amt; // keep spec categories: treat rent under EMI bucket
+        else if (t.category === "Utilities") out.EMI += amt * 0.0; // excluded from pie spec by default
+        else out.Shopping += amt * 0.0;
+      } else if (t.type === "investment" || t.category === "Investment") {
+        out.Investments += amt;
+      }
+    }
+
+    // If no tx data, fall back to model.expenses
+    const total = Object.values(out).reduce((a, b) => a + b, 0);
+    if (total <= 0 && m.expenses) {
+      for (const k of CATEGORY_ORDER) out[k] = Number(m.expenses[k] || 0) || 0;
+    }
+    return out;
+  }
+
   function calcTotals(m) {
-    const totalExpenses = Object.values(m.expenses).reduce((a, b) => a + b, 0);
-    const subsTotal = m.subscriptions.reduce((a, s) => a + s.monthly, 0);
+    const tx = getTx(m);
+    const incomeTx = sumTx(tx, (t) => t.type === "income");
+    const totalIncome = incomeTx > 0 ? incomeTx : Number(m.totalIncome || 0) || 0;
+
+    const totalExpensesTx = sumTx(tx, (t) => t.type === "expense");
+    const totalExpenses =
+      totalExpensesTx > 0
+        ? totalExpensesTx
+        : m.expenses
+          ? Object.values(m.expenses).reduce((a, b) => a + b, 0)
+          : 0;
+
+    const investTx = sumTx(tx, (t) => t.type === "investment" || t.category === "Investment");
+    const invest = investTx > 0 ? investTx : Number(m.totalInvestments ?? m.expenses?.Investments ?? 0) || 0;
+
+    const subsTotal = Array.isArray(m.subscriptions) ? m.subscriptions.reduce((a, s) => a + (Number(s.monthly || 0) || 0), 0) : 0;
+
     const budgetUsedPct = m.budgetLimit > 0 ? totalExpenses / m.budgetLimit : 0;
-    const remaining = Math.max(0, m.budgetLimit - totalExpenses);
-    const invest = m.totalInvestments ?? m.expenses.Investments ?? 0;
-    return { totalExpenses, subsTotal, budgetUsedPct, remaining, invest };
+    const remaining = Math.max(0, (Number(m.budgetLimit || 0) || 0) - totalExpenses);
+    return { totalIncome, totalExpenses, subsTotal, budgetUsedPct, remaining, invest };
   }
 
   function calcHealthScore(m) {
     const { totalExpenses, subsTotal, budgetUsedPct, invest } = calcTotals(m);
-    const income = Math.max(1, m.totalIncome);
+    const income = Math.max(1, calcTotals(m).totalIncome);
 
     // Balanced heuristic (hackathon-grade): punish overspending & subscription drag, reward investing & budget headroom.
     const expenseRatio = totalExpenses / income; // 0..(maybe >1)
@@ -187,10 +298,11 @@
 
   function genAISummary(m) {
     const { totalExpenses, subsTotal, budgetUsedPct, remaining, invest } = calcTotals(m);
-    const income = Math.max(1, m.totalIncome);
+    const income = Math.max(1, calcTotals(m).totalIncome);
 
-    const catPairs = Object.entries(m.expenses)
-      .filter(([k]) => k !== "Investments") // treat investments separately in narrative
+    const breakdown = deriveBreakdownFromTx(m);
+    const catPairs = Object.entries(breakdown)
+      .filter(([k]) => k !== "Investments")
       .sort((a, b) => b[1] - a[1]);
     const top = catPairs[0] ? { k: catPairs[0][0], v: catPairs[0][1] } : { k: "—", v: 0 };
     const second = catPairs[1] ? { k: catPairs[1][0], v: catPairs[1][1] } : null;
@@ -261,14 +373,14 @@
   }
 
   function renderStats(m) {
-    const { totalExpenses, invest } = calcTotals(m);
-    setText("statIncome", fmtINR(m.totalIncome));
+    const { totalIncome, totalExpenses, invest } = calcTotals(m);
+    setText("statIncome", fmtINR(totalIncome));
     setText("statExpenses", fmtINR(totalExpenses));
     setText("statInvestments", fmtINR(invest));
 
-    const save = Math.max(0, m.totalIncome - totalExpenses - invest);
-    const spendRate = totalExpenses / Math.max(1, m.totalIncome);
-    const investRate = invest / Math.max(1, m.totalIncome);
+    const save = Math.max(0, totalIncome - totalExpenses - invest);
+    const spendRate = totalExpenses / Math.max(1, totalIncome);
+    const investRate = invest / Math.max(1, totalIncome);
 
     setText("statIncomeHint", `${m.month} • salary + side income`);
     setText("statExpenseHint", `Spend rate ${fmtPct(clamp(spendRate, 0, 1.99))} • keep under 65%`);
@@ -346,7 +458,8 @@
     if (!ctx) return;
 
     const labels = CATEGORY_ORDER;
-    const values = labels.map((k) => m.expenses[k] ?? 0);
+    const breakdown = deriveBreakdownFromTx(m);
+    const values = labels.map((k) => breakdown[k] ?? 0);
     const total = values.reduce((a, b) => a + b, 0) || 1;
     const colors = labels.map((k) => CATEGORY_COLORS[k] ?? "#999");
 
@@ -509,11 +622,19 @@
     setUploadStatus("is-busy", "Detecting subscriptions & anomalies…");
     await sleep(900);
 
-    // Lightly adjust model to feel "AI-powered"
+    // Lightly adjust model to feel "AI-powered" (add a couple detected transactions)
     const bump = file.type === "application/pdf" ? 0.06 : 0.04;
-    const cats = Object.keys(model.expenses);
-    const pick = cats[Math.floor(Math.random() * cats.length)];
-    model.expenses[pick] = Math.max(0, Math.round(model.expenses[pick] * (1 + bump)));
+    const pick = ["Food", "Travel", "Shopping", "Coffee", "Utilities"][Math.floor(Math.random() * 5)];
+    const detected = Math.max(120, Math.round(900 + Math.random() * 1800));
+    model.transactions = Array.isArray(model.transactions) ? model.transactions : [];
+    model.transactions.unshift({
+      id: uid(),
+      date: isoDateDaysAgo(0),
+      type: "expense",
+      category: pick,
+      merchant: "Statement detected",
+      amount: Math.round(detected * (1 + bump)),
+    });
     model.trend = "↑ Updated after document analysis";
 
     // Randomly "detect" an extra subscription sometimes
@@ -559,9 +680,9 @@
   function aiReply(prompt) {
     const p = String(prompt || "").toLowerCase();
     const { totalExpenses, subsTotal, budgetUsedPct, remaining, invest } = calcTotals(model);
-    const income = Math.max(1, model.totalIncome);
+    const income = Math.max(1, calcTotals(model).totalIncome);
 
-    const sortedCats = Object.entries(model.expenses)
+    const sortedCats = Object.entries(deriveBreakdownFromTx(model))
       .filter(([k]) => k !== "Investments")
       .sort((a, b) => b[1] - a[1]);
 
@@ -616,7 +737,8 @@
     }
 
     // Generic fallback with relevant numbers
-    return `Here’s your snapshot:\n- Income: ${fmtINR(model.totalIncome)}\n- Expenses: ${fmtINR(totalExpenses)}\n- Investments: ${fmtINR(invest)}\n- Subscriptions: ${fmtINR(subsTotal)}/mo\n\nAsk “Where am I overspending?” or “Can I afford a new phone for 55000?”`;
+    const { totalIncome } = calcTotals(model);
+    return `Here’s your snapshot:\n- Income: ${fmtINR(totalIncome)}\n- Expenses: ${fmtINR(totalExpenses)}\n- Investments: ${fmtINR(invest)}\n- Subscriptions: ${fmtINR(subsTotal)}/mo\n\nAsk “Where am I overspending?” or “Can I afford a new phone for 55000?”`;
   }
 
   function bootChat() {
@@ -625,6 +747,336 @@
       addBubble("ai", "Hi — I’m your AI Money Coach. Ask me about overspending, budgets, or big purchases.", "AI Money Coach • online");
       addBubble("ai", "Try: “Where am I overspending?” or “Can I afford a new phone for 55,000?”");
     }
+  }
+
+  // -----------------------------
+  // Theme + notifications + pages
+  // -----------------------------
+  function getTheme() {
+    return storage.get("theme") || "dark";
+  }
+
+  function applyTheme(theme) {
+    const t = theme === "light" ? "light" : "dark";
+    storage.set("theme", t);
+    document.body.classList.toggle("theme-light", t === "light");
+    $("themeDark")?.setAttribute("aria-checked", String(t === "dark"));
+    $("themeLight")?.setAttribute("aria-checked", String(t === "light"));
+  }
+
+  function getNotifs() {
+    const raw = storage.get("notifs");
+    if (!raw) return [];
+    try {
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveNotifs(list) {
+    storage.set("notifs", JSON.stringify(list.slice(0, 40)));
+  }
+
+  function unreadCount(list) {
+    return list.reduce((a, n) => a + (n && !n.read ? 1 : 0), 0);
+  }
+
+  function toast(title, body) {
+    const root = $("toasts");
+    if (!root) return;
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.innerHTML = `
+      <div class="toast__main">
+        <div class="toast__title">${escapeHtml(title)}</div>
+        <div class="toast__body">${escapeHtml(body)}</div>
+      </div>
+      <button class="toast__close" type="button" aria-label="Dismiss">
+        <i data-lucide="x"></i>
+      </button>
+    `;
+    root.appendChild(el);
+    el.querySelector(".toast__close")?.addEventListener("click", () => el.remove());
+    setTimeout(() => el.remove(), 6500);
+    if (window.lucide?.createIcons) window.lucide.createIcons();
+  }
+
+  function pushNotif(title, body, kind = "info") {
+    const list = getNotifs();
+    const item = { id: uid(), title, body, kind, ts: Date.now(), read: false };
+    list.unshift(item);
+    saveNotifs(list);
+    renderNotifs();
+    toast(title, body);
+  }
+
+  function renderNotifs() {
+    const list = getNotifs();
+    const dot = $("notifDot");
+    const panel = $("notifPanel");
+    const ul = $("notifList");
+    const foot = $("notifFoot");
+    const unread = unreadCount(list);
+    if (dot) dot.style.display = unread > 0 ? "block" : "none";
+    if (panel) panel.setAttribute("aria-hidden", panel.classList.contains("is-open") ? "false" : "true");
+    if (ul) {
+      ul.innerHTML = "";
+      if (!list.length) {
+        ul.innerHTML = `<div class="muted" style="padding:10px">No notifications yet.</div>`;
+      } else {
+        for (const n of list) {
+          const item = document.createElement("div");
+          item.className = `notif-item ${n.read ? "" : "is-unread"}`;
+          item.innerHTML = `
+            <div class="notif-item__title">${escapeHtml(n.title)}</div>
+            <div class="notif-item__body">${escapeHtml(n.body)}</div>
+            <div class="notif-item__meta">${new Date(n.ts).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}</div>
+          `;
+          ul.appendChild(item);
+        }
+      }
+    }
+    if (foot) foot.textContent = unread ? `${unread} unread` : "You’re all caught up.";
+  }
+
+  function markAllRead() {
+    const list = getNotifs().map((n) => ({ ...n, read: true }));
+    saveNotifs(list);
+    renderNotifs();
+  }
+
+  function clearNotifs() {
+    saveNotifs([]);
+    renderNotifs();
+  }
+
+  function budgetBand(p) {
+    if (p >= 1) return "over";
+    if (p >= 0.8) return "warn";
+    return "ok";
+  }
+
+  function tickBudgetNotifs() {
+    const { budgetUsedPct, remaining } = calcTotals(model);
+    const band = budgetBand(budgetUsedPct);
+    const prev = storage.get("budgetBand") || "ok";
+    if (band !== prev) {
+      storage.set("budgetBand", band);
+      if (band === "warn") pushNotif("Budget alert", `You’ve reached 80% of your monthly limit. Remaining ${fmtINR(remaining)}.`, "warn");
+      if (band === "over") pushNotif("Budget exceeded", `You crossed your monthly budget. Remaining ${fmtINR(remaining)}.`, "danger");
+    }
+  }
+
+  function fmtDay(iso) {
+    const d = new Date(`${iso}T12:00:00`);
+    return d.toLocaleDateString(undefined, { weekday: "short", day: "2-digit", month: "short" });
+  }
+
+  function renderTransactionsPage() {
+    const tx = getTx(model).slice().sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    const typeSel = $("txType");
+    const catSel = $("txCategory");
+    const type = typeSel?.value || "all";
+    const category = catSel?.value || "all";
+
+    const filtered = tx.filter((t) => {
+      if (type !== "all" && t.type !== type) return false;
+      if (category !== "all" && t.category !== category) return false;
+      return true;
+    });
+
+    const sumExpense = sumTx(filtered, (t) => t.type === "expense");
+    const sumInvest = sumTx(filtered, (t) => t.type === "investment");
+    const sumIncome = sumTx(filtered, (t) => t.type === "income");
+
+    const summary = $("txSummary");
+    if (summary) {
+      summary.innerHTML = `
+        <span class="pill2"><i data-lucide="list"></i> ${filtered.length} items</span>
+        <span class="pill2"><i data-lucide="arrow-up-right"></i> Expenses ${fmtINR(sumExpense)}</span>
+        <span class="pill2"><i data-lucide="trending-up"></i> Investments ${fmtINR(sumInvest)}</span>
+        <span class="pill2"><i data-lucide="arrow-down-left"></i> Income ${fmtINR(sumIncome)}</span>
+      `;
+    }
+
+    // Category totals
+    /** @type {Record<string, {amount:number, count:number}>} */
+    const byCat = {};
+    for (const t of filtered) {
+      const k = t.category || "Other";
+      if (!byCat[k]) byCat[k] = { amount: 0, count: 0 };
+      byCat[k].amount += Number(t.amount || 0) || 0;
+      byCat[k].count += 1;
+    }
+    const catRows = Object.entries(byCat).sort((a, b) => b[1].amount - a[1].amount);
+    const catsEl = $("txCats");
+    if (catsEl) {
+      catsEl.innerHTML = "";
+      if (!catRows.length) catsEl.innerHTML = `<div class="muted">No transactions match your filters.</div>`;
+      for (const [k, v] of catRows) {
+        const row = document.createElement("div");
+        row.className = "tx-cat";
+        row.innerHTML = `
+          <div class="tx-cat__left">
+            <span class="tx-cat__dot" style="background:${TX_COLORS[k] || "rgba(255,255,255,.45)"}"></span>
+            <div class="tx-cat__txt">
+              <div class="tx-cat__name">${escapeHtml(k)}</div>
+              <div class="tx-cat__count">${v.count} transactions</div>
+            </div>
+          </div>
+          <div class="tx-cat__amt">${fmtINR(v.amount)}</div>
+        `;
+        catsEl.appendChild(row);
+      }
+    }
+
+    // Date-wise history
+    /** @type {Record<string, any[]>} */
+    const byDate = {};
+    for (const t of filtered) {
+      const d = t.date || "—";
+      byDate[d] = byDate[d] || [];
+      byDate[d].push(t);
+    }
+    const dates = Object.keys(byDate).sort((a, b) => String(b).localeCompare(String(a)));
+    const hist = $("txHistory");
+    if (hist) {
+      hist.innerHTML = "";
+      for (const d of dates) {
+        const list = byDate[d].slice().sort((a, b) => (b.type || "").localeCompare(a.type || ""));
+        const dayExpense = sumTx(list, (t) => t.type === "expense");
+        const dayInvest = sumTx(list, (t) => t.type === "investment");
+        const dayIncome = sumTx(list, (t) => t.type === "income");
+        const day = document.createElement("div");
+        day.className = "tx-day";
+        day.innerHTML = `
+          <div class="tx-day__head">
+            <div class="tx-day__date">${escapeHtml(fmtDay(d))}</div>
+            <div class="tx-day__sum">- ${fmtINR(dayExpense)} • +${fmtINR(dayIncome)} • ↑ ${fmtINR(dayInvest)}</div>
+          </div>
+        `;
+        for (const t of list) {
+          const amtClass =
+            t.type === "expense" ? "tx-amt--expense" : t.type === "investment" ? "tx-amt--invest" : "tx-amt--income";
+          const row = document.createElement("div");
+          row.className = "tx-row";
+          row.innerHTML = `
+            <div class="tx-row__left">
+              <div class="tx-row__title">${escapeHtml(t.merchant || "Transaction")}</div>
+              <div class="tx-row__meta">${escapeHtml(t.category || "—")} • ${escapeHtml(t.type || "—")}</div>
+            </div>
+            <div class="tx-amt ${amtClass}">${fmtINR(Number(t.amount || 0) || 0)}</div>
+          `;
+          day.appendChild(row);
+        }
+        hist.appendChild(day);
+      }
+    }
+
+    if (window.lucide?.createIcons) window.lucide.createIcons();
+  }
+
+  function renderSubscriptionsPage() {
+    const list = Array.isArray(model.subscriptions) ? model.subscriptions : [];
+    const total = list.reduce((a, s) => a + (Number(s.monthly || 0) || 0), 0);
+    setText("subsPageTotal", fmtINR(total));
+    setText("subsPageAnnual", `Estimated yearly: ${fmtINR(total * 12)}`);
+
+    const wrap = $("subsPageList");
+    if (wrap) {
+      wrap.innerHTML = "";
+      const sorted = list.slice().sort((a, b) => (Number(b.monthly || 0) || 0) - (Number(a.monthly || 0) || 0));
+      for (const s of sorted) {
+        const row = document.createElement("div");
+        row.className = "subs-page__item";
+        row.innerHTML = `
+          <div class="subs-page__left">
+            <div class="subs-page__logo"><i data-lucide="${s.icon || "repeat"}"></i></div>
+            <div class="subs-page__txt">
+              <div class="subs-page__name" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</div>
+              <div class="subs-page__meta">Renews monthly • active</div>
+            </div>
+          </div>
+          <div class="subs-page__price">${fmtINR(Number(s.monthly || 0) || 0)}</div>
+        `;
+        wrap.appendChild(row);
+      }
+    }
+
+    const insights = $("subsInsights");
+    if (insights) {
+      const sorted = list.slice().sort((a, b) => (Number(b.monthly || 0) || 0) - (Number(a.monthly || 0) || 0));
+      const top = sorted.slice(0, 3);
+      insights.innerHTML = `
+        <div class="insight"><strong>Highest cost:</strong> ${top.map((x) => `${escapeHtml(x.name)} (${fmtINR(x.monthly)})`).join(", ")}.</div>
+        <div class="insight"><strong>Quick win:</strong> cancel 1 low-use app to save ${fmtINR(Math.min(299, total))}/month.</div>
+        <div class="insight"><strong>AI tip:</strong> rotate entertainment subscriptions monthly instead of stacking them all.</div>
+      `;
+    }
+
+    if (window.lucide?.createIcons) window.lucide.createIcons();
+  }
+
+  function bootTransactionsFilters() {
+    const tx = getTx(model);
+    const catSel = $("txCategory");
+    if (catSel && catSel.childElementCount <= 1) {
+      const cats = Array.from(new Set(tx.map((t) => t.category).filter(Boolean))).sort();
+      for (const c of cats) {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        catSel.appendChild(opt);
+      }
+    }
+  }
+
+  function bootFeedback() {
+    const stars = $("feedbackStars");
+    const ratingEl = $("feedbackRating");
+    const textEl = $("feedbackText");
+    const hint = $("feedbackHint");
+
+    const raw = storage.get("feedback");
+    if (raw) {
+      try {
+        const v = JSON.parse(raw);
+        if (ratingEl) ratingEl.value = String(v.rating || 0);
+        if (textEl) textEl.value = String(v.text || "");
+      } catch {
+        // ignore
+      }
+    }
+
+    const setStars = (n) => {
+      if (ratingEl) ratingEl.value = String(n);
+      stars?.querySelectorAll(".star").forEach((b) => {
+        const k = Number(b.getAttribute("data-star") || "0");
+        b.classList.toggle("is-on", k > 0 && k <= n);
+      });
+    };
+
+    stars?.addEventListener("click", (e) => {
+      const btn = e.target.closest?.("[data-star]");
+      if (!btn) return;
+      setStars(Number(btn.getAttribute("data-star") || "0"));
+    });
+
+    const rating0 = Number(ratingEl?.value || 0);
+    if (rating0) setStars(rating0);
+
+    $("feedbackForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const rating = Number(ratingEl?.value || 0);
+      const text = textEl?.value?.trim() || "";
+      storage.set("feedback", JSON.stringify({ rating, text, ts: Date.now() }));
+      if (hint) hint.textContent = "Thanks! Feedback saved (demo).";
+      pushNotif("Feedback received", `Thanks for rating ${rating || 0}/5.`, "info");
+    });
+
+    if (window.lucide?.createIcons) window.lucide.createIcons();
   }
 
   // -----------------------------
@@ -654,6 +1106,15 @@
     });
 
     if (route === "profile") renderProfile();
+    if (route === "transactions") {
+      bootTransactionsFilters();
+      renderTransactionsPage();
+    }
+    if (route === "subscriptions") renderSubscriptionsPage();
+    if (route === "settings") {
+      applyTheme(getTheme());
+      bootFeedback();
+    }
   }
 
   function bootRevealObserver() {
@@ -684,7 +1145,13 @@
   function refreshAI() {
     // Keep income stable, nudge spend/invest a bit
     const next = structuredClone(model);
-    for (const k of Object.keys(next.expenses)) next.expenses[k] = jitter(next.expenses[k], 0.08);
+    if (Array.isArray(next.transactions)) {
+      next.transactions = next.transactions.map((t) => {
+        if (t.type === "income") return t;
+        const pct = t.type === "investment" ? 0.06 : 0.08;
+        return { ...t, amount: jitter(Number(t.amount || 0) || 0, pct) };
+      });
+    }
     next.totalInvestments = jitter(next.totalInvestments, 0.06);
     next.trend = Math.random() < 0.5 ? "↑ +3 pts vs last week" : "→ steady vs last week";
     model = next;
@@ -711,6 +1178,9 @@
     // Icons
     if (window.lucide?.createIcons) window.lucide.createIcons();
 
+    // Theme
+    applyTheme(getTheme());
+
     // Date stamp
     const d = new Date();
     setText("todayDate", d.toLocaleDateString(undefined, { weekday: "long", day: "2-digit", month: "short" }));
@@ -722,6 +1192,31 @@
 
     // Avatar -> Profile
     $("avatarBtn")?.addEventListener("click", () => setRoute("profile"));
+
+    // Notifications panel
+    renderNotifs();
+    const panel = $("notifPanel");
+    $("btnNotif")?.addEventListener("click", () => {
+      if (!panel) return;
+      panel.classList.toggle("is-open");
+      if (panel.classList.contains("is-open")) markAllRead();
+      renderNotifs();
+    });
+    $("btnNotifClear")?.addEventListener("click", () => clearNotifs());
+    document.addEventListener("click", (e) => {
+      const btn = $("btnNotif");
+      if (!panel || !btn) return;
+      if (!panel.classList.contains("is-open")) return;
+      if (panel.contains(e.target) || btn.contains(e.target)) return;
+      panel.classList.remove("is-open");
+      renderNotifs();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape") return;
+      if (!panel) return;
+      panel.classList.remove("is-open");
+      renderNotifs();
+    });
 
     // Chips
     $("chipRefresh")?.addEventListener("click", () => refreshAI());
@@ -793,6 +1288,14 @@
       setRoute("login");
     });
 
+    // Transactions filters
+    $("txType")?.addEventListener("change", () => renderTransactionsPage());
+    $("txCategory")?.addEventListener("change", () => renderTransactionsPage());
+
+    // Settings: theme toggles
+    $("themeDark")?.addEventListener("click", () => applyTheme("dark"));
+    $("themeLight")?.addEventListener("click", () => applyTheme("light"));
+
     // Upload buttons
     $("btnUploadPdf")?.addEventListener("click", () => $("filePdf")?.click());
     $("btnUploadImg")?.addEventListener("click", () => $("fileImg")?.click());
@@ -834,6 +1337,11 @@
 
     // Initial render
     renderAll();
+    tickBudgetNotifs();
+    setInterval(() => {
+      if (!isAuthed()) return;
+      tickBudgetNotifs();
+    }, 45000);
     // Start on login if signed out
     if (isAuthed()) {
       renderProfile();
