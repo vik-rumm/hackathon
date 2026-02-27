@@ -203,8 +203,8 @@ function setupUploadSim() {
                     parts: [
                         { text: "Analyze this financial document. Extract the total amount spent, identify the main category (e.g., Food, Shopping, Utilities), and key vendors. Be extremely concise." },
                         {
-                            inline_data: {
-                                mime_type: mime,
+                            inlineData: {
+                                mimeType: mime,
                                 data: base64
                             }
                         }
@@ -212,13 +212,35 @@ function setupUploadSim() {
                 }]
             };
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            // First, dynamically find an appropriate model
+            const modelsResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+            if (!modelsResponse.ok) throw new Error("Could not fetch models list. Invalid API Key?");
+            const modelsData = await modelsResponse.json();
+
+            // Look for a flash or pro model that supports generateContent
+            let targetModel = "models/gemini-1.5-flash"; // default fallback
+            const validModels = modelsData.models.filter(m =>
+                m.supportedGenerationMethods.includes("generateContent") &&
+                m.name.includes("gemini")
+            );
+
+            const flashModel = validModels.find(m => m.name.includes("1.5-flash"));
+            const proModel = validModels.find(m => m.name.includes("1.5-pro"));
+
+            if (flashModel) targetModel = flashModel.name;
+            else if (proModel) targetModel = proModel.name;
+            else if (validModels.length > 0) targetModel = validModels[0].name;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${targetModel}:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            if (!response.ok) throw new Error("API Error: " + response.status);
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(`API Error: ${response.status} - ${errText}`);
+            }
 
             const data = await response.json();
             const reply = data.candidates[0].content.parts[0].text;
@@ -232,10 +254,13 @@ function setupUploadSim() {
                 <button class="btn btn-outline" style="margin-top: 5px;" onclick="resetUpload()">Upload Another</button>
             `;
         } catch (error) {
-            console.error(error);
+            console.error("Upload API Error Details:", error);
             uploadStatus.innerHTML = `
                 <i class="fa-solid fa-circle-xmark" style="color: var(--danger); font-size: 2rem;"></i>
-                <p style="color: var(--danger); margin-top: 10px;">Error analyzing document</p>
+                <p style="color: var(--danger); margin-top: 10px; font-weight: bold;">Error analyzing document</p>
+                <div style="font-size: 0.75rem; color: var(--danger); padding: 10px; background: rgba(255,0,0,0.1); border-radius: 8px; text-align: left; max-height: 100px; overflow-y: auto;">
+                    ${error.message.replace(/\n/g, '<br>')}
+                </div>
                 <button class="btn btn-outline" style="margin-top: 15px;" onclick="resetUpload()">Try Again</button>
             `;
         }
@@ -250,6 +275,7 @@ function setupUploadSim() {
 }
 
 // 4. Chat Assistant with Gemini API
+// 4. Chat Assistant with Gemini API
 function setupChatSim() {
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.querySelector('.btn-send');
@@ -262,10 +288,10 @@ function setupChatSim() {
 
         let innerHTML = '';
         if (!isUser) {
-            innerHTML += `<div class="avatar-small"><i class="fa-solid fa-robot"></i></div>`;
+            innerHTML += '<div class="avatar-small"><i class="fa-solid fa-robot"></i></div>';
         }
 
-        innerHTML += `<div class="bubble"></div>`;
+        innerHTML += '<div class="bubble"></div>';
         msgDiv.innerHTML = innerHTML;
 
         // Parse basic markdown if needed (bolding)
@@ -292,15 +318,27 @@ function setupChatSim() {
 
         try {
             // Provide some context to the AI about the app
-            const systemContext = `You are "AI Money Coach", a helpful and professional personal finance AI assistant inside a modern dark-themed dashboard. 
-            The user (Alex) has a financial health score of 85.
-            Total Income: $6,240
-            Total Expenses: $3,120
-            Investments: $1,500
-            Monthly Budget: $2,500 / $3,000 (83% used).
-            Keep your answers concise, friendly, and formatted nicely. `;
+            const systemContext = "You are 'AI Money Coach', a helpful and professional personal finance AI assistant inside a modern dark-themed dashboard.\nThe user (Alex) has a financial health score of 85.\nTotal Income: $6,240\nTotal Expenses: $3,120\nInvestments: $1,500\nMonthly Budget: $2,500 / $3,000 (83% used).\nKeep your answers concise, friendly, and formatted nicely.";
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            // First, dynamically find an appropriate model
+            const modelsResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+            if (!modelsResponse.ok) throw new Error("Could not fetch models list. Invalid API Key?");
+            const modelsData = await modelsResponse.json();
+
+            let targetModel = "models/gemini-1.5-flash";
+            const validModels = modelsData.models.filter(m =>
+                m.supportedGenerationMethods.includes("generateContent") &&
+                m.name.includes("gemini")
+            );
+
+            const flashModel = validModels.find(m => m.name.includes("1.5-flash"));
+            const proModel = validModels.find(m => m.name.includes("1.5-pro"));
+
+            if (flashModel) targetModel = flashModel.name;
+            else if (proModel) targetModel = proModel.name;
+            else if (validModels.length > 0) targetModel = validModels[0].name;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${targetModel}:generateContent?key=${apiKey}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -313,7 +351,8 @@ function setupChatSim() {
             });
 
             if (!response.ok) {
-                throw new Error(`API Error: ${response.status}`);
+                const errText = await response.text();
+                throw new Error(`API Error: ${response.status} - ${errText}`);
             }
 
             const data = await response.json();

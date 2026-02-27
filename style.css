@@ -1,11 +1,12 @@
 :root {
-    /* Color Palette - Dark Futuristic */
-    --bg-dark: #0B0E14;
-    --bg-card: rgba(18, 23, 33, 0.7);
-    --bg-card-solid: #121721;
-    --text-primary: #FFFFFF;
-    --text-secondary: #94A3B8;
-    --border-color: rgba(255, 255, 255, 0.08);
+    /* Color Palette - Modern Light */
+    --bg-dark: #F3F4F6;
+    /* Main outer background */
+    --bg-card: rgba(255, 255, 255, 0.9);
+    --bg-card-solid: #FFFFFF;
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --border-color: rgba(0, 0, 0, 0.08);
 
     /* Brand Gradients & Colors */
     --accent-blue: #3B82F6;
@@ -21,9 +22,9 @@
     --warning: #F59E0B;
 
     /* Glassmorphism */
-    --glass-bg: rgba(18, 23, 33, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
 
     /* Typography */
     --font-heading: 'Clash Display', sans-serif;
@@ -174,7 +175,7 @@ ul {
 .sidebar-nav a:hover,
 .sidebar-footer a:hover,
 .sidebar-nav li.active a {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     color: var(--text-primary);
 }
 
@@ -324,9 +325,9 @@ ul {
 
 /* Glassmorphism specifically */
 .glassmorphism {
-    background: rgba(255, 255, 255, 0.03);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.7);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* Health Score */
@@ -392,7 +393,7 @@ ul {
     display: flex;
     align-items: center;
     gap: 15px;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(0, 0, 0, 0.02);
     border: 1px solid var(--border-color);
     padding: 1rem;
     border-radius: var(--radius-md);
@@ -400,7 +401,7 @@ ul {
 }
 
 .stat-card:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .stat-icon {
@@ -542,7 +543,7 @@ ul {
 .total-subs {
     font-weight: 600;
     color: var(--text-secondary);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 0.85rem;
@@ -560,13 +561,13 @@ ul {
     align-items: center;
     padding: 10px;
     border-radius: var(--radius-sm);
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(0, 0, 0, 0.02);
     border: 1px solid transparent;
     transition: all 0.2s;
 }
 
 .sub-item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     border-color: var(--border-color);
 }
 
@@ -671,7 +672,7 @@ ul {
 }
 
 .btn-outline:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
     border-color: var(--text-secondary);
 }
 
@@ -690,7 +691,7 @@ ul {
 .spinner {
     width: 30px;
     height: 30px;
-    border: 3px solid rgba(255, 255, 255, 0.1);
+    border: 3px solid rgba(0, 0, 0, 0.1);
     border-top: 3px solid var(--accent-blue);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -751,7 +752,7 @@ ul {
 }
 
 .bubble {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.03);
     padding: 10px 14px;
     border-radius: 14px 14px 14px 4px;
     font-size: 0.9rem;
@@ -803,7 +804,7 @@ ul {
 
 .chat-input-area input {
     flex: 1;
-    background: var(--bg-card-solid);
+    background: rgba(0, 0, 0, 0.02);
     border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 10px 16px;
@@ -815,7 +816,9 @@ ul {
 }
 
 .chat-input-area input:focus {
+    outline: none;
     border-color: var(--accent-blue);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .btn-send {
