@@ -677,7 +677,14 @@
       );
 
       if (!res.ok) {
-        setUploadStatus("is-warn", `Gemini error: ${res.status}`);
+        let msg = `Gemini error: ${res.status}`;
+        try {
+          const errBody = await res.json();
+          if (errBody?.error?.message) msg += ` – ${errBody.error.message}`;
+        } catch {
+          // ignore JSON parse error
+        }
+        setUploadStatus("is-warn", msg);
         return;
       }
 
