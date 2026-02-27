@@ -221,10 +221,12 @@
                         <div class="upload-area" id="dropZone">
                             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                             <p>Drag & Drop or Click to Upload</p>
+                            <input type="file" id="fileUpload" accept="image/*,application/pdf" style="display: none;">
                             <div class="upload-buttons">
-                                <button class="btn btn-outline"><i class="fa-solid fa-file-pdf"></i> PDF
+                                <button class="btn btn-outline" id="btnUploadPdf"><i class="fa-solid fa-file-pdf"></i>
+                                    PDF
                                     Statement</button>
-                                <button class="btn btn-outline"><i class="fa-solid fa-image"></i> Bill
+                                <button class="btn btn-outline" id="btnUploadImg"><i class="fa-solid fa-image"></i> Bill
                                     Screenshot</button>
                             </div>
                         </div>

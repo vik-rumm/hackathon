@@ -153,43 +153,98 @@ function initComparisonChart() {
     new Chart(ctx, config);
 }
 
-// 3. Upload Simulation
+// 3. Document Analysis with Gemini API
 function setupUploadSim() {
     const dropZone = document.getElementById('dropZone');
     const uploadStatus = document.getElementById('uploadStatus');
-    const uploadBtns = document.querySelectorAll('.upload-area .btn');
+    const fileInput = document.getElementById('fileUpload');
+    const btnUploadPdf = document.getElementById('btnUploadPdf');
+    const btnUploadImg = document.getElementById('btnUploadImg');
 
-    const simulateUpload = () => {
-        dropZone.style.display = 'none';
-        uploadStatus.classList.remove('hidden');
-
-        // Simulating AI analyzing the document
-        setTimeout(() => {
-            uploadStatus.innerHTML = `
-                <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 2rem;"></i>
-                <p class="text-success" style="margin-top: 10px;">Analysis Complete!</p>
-                <p style="font-size: 0.85rem; color: var(--text-secondary);">Found 12 new transactions.</p>
-                <button class="btn btn-outline" style="margin-top: 15px;" onclick="resetUpload()">Upload Another</button>
-            `;
-        }, 2500);
-    };
-
-    uploadBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            simulateUpload();
-        });
+    // Trigger file input
+    dropZone.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') fileInput.click();
+    });
+    btnUploadPdf.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.accept = 'application/pdf';
+        fileInput.click();
+    });
+    btnUploadImg.addEventListener('click', (e) => {
+        e.stopPropagation();
+        fileInput.accept = 'image/*';
+        fileInput.click();
     });
 
-    dropZone.addEventListener('click', simulateUpload);
+    fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    // Make reset function globally available
-    window.resetUpload = function () {
-        uploadStatus.classList.add('hidden');
+        dropZone.style.display = 'none';
+        uploadStatus.classList.remove('hidden');
         uploadStatus.innerHTML = `
             <div class="spinner"></div>
             <p class="gradient-text">AI analyzing document...</p>
         `;
+
+        const getBase64 = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve({ base64: reader.result.split(',')[1], mime: file.type });
+            reader.onerror = error => reject(error);
+        });
+
+        try {
+            let apiKey = localStorage.getItem('gemini_api_key') || 'AIzaSyAoMBlNqe8XJt2cVR10tUrRCHQP_44logc';
+            const { base64, mime } = await getBase64(file);
+
+            const payload = {
+                contents: [{
+                    parts: [
+                        { text: "Analyze this financial document. Extract the total amount spent, identify the main category (e.g., Food, Shopping, Utilities), and key vendors. Be extremely concise." },
+                        {
+                            inline_data: {
+                                mime_type: mime,
+                                data: base64
+                            }
+                        }
+                    ]
+                }]
+            };
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error("API Error: " + response.status);
+
+            const data = await response.json();
+            const reply = data.candidates[0].content.parts[0].text;
+
+            uploadStatus.innerHTML = `
+                <i class="fa-solid fa-circle-check" style="color: var(--success); font-size: 2rem;"></i>
+                <p class="text-success" style="margin-top: 10px;">Analysis Complete!</p>
+                <div style="font-size: 0.85rem; color: var(--text-secondary); margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 8px; text-align: left;">
+                    ${reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}
+                </div>
+                <button class="btn btn-outline" style="margin-top: 5px;" onclick="resetUpload()">Upload Another</button>
+            `;
+        } catch (error) {
+            console.error(error);
+            uploadStatus.innerHTML = `
+                <i class="fa-solid fa-circle-xmark" style="color: var(--danger); font-size: 2rem;"></i>
+                <p style="color: var(--danger); margin-top: 10px;">Error analyzing document</p>
+                <button class="btn btn-outline" style="margin-top: 15px;" onclick="resetUpload()">Try Again</button>
+            `;
+        }
+    });
+
+    // Make reset function globally available
+    window.resetUpload = function () {
+        fileInput.value = '';
+        uploadStatus.classList.add('hidden');
         dropZone.style.display = 'block';
     };
 }
