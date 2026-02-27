@@ -1027,6 +1027,126 @@
     if (window.lucide?.createIcons) window.lucide.createIcons();
   }
 
+  // -----------------------------
+  // Investments page
+  // -----------------------------
+  function getInvestmentTx(m) {
+    return getTx(m).filter((t) => t.type === "investment" || t.category === "Investment");
+  }
+
+  function calcInvestTotals(m) {
+    const list = getInvestmentTx(m);
+    const allTime = sumTx(list, () => true);
+    const todayIso = isoDateDaysAgo(0);
+    const monthPrefix = todayIso.slice(0, 7);
+    let thisMonth = 0;
+    for (const t of list) {
+      const d = String(t.date || "");
+      if (d.startsWith(monthPrefix)) thisMonth += Number(t.amount || 0) || 0;
+    }
+    return { allTime, thisMonth };
+  }
+
+  function buildInvestBuckets(m) {
+    /** @type {Record<string, {amount:number, count:number}>} */
+    const buckets = {};
+    for (const t of getInvestmentTx(m)) {
+      const name = t.merchant || "Investment";
+      if (!buckets[name]) buckets[name] = { amount: 0, count: 0 };
+      buckets[name].amount += Number(t.amount || 0) || 0;
+      buckets[name].count += 1;
+    }
+    return buckets;
+  }
+
+  function renderInvestmentsPage() {
+    const { allTime, thisMonth } = calcInvestTotals(model);
+    setText("investTotalAllTime", fmtINR(allTime));
+    setText("investTotalThisMonth", fmtINR(thisMonth));
+
+    const buckets = buildInvestBuckets(model);
+    const entries = Object.entries(buckets).sort((a, b) => b[1].amount - a[1].amount);
+
+    const note =
+      entries.length === 0
+        ? "No investments captured yet. Add your SIPs or stock purchases manually from the dashboard."
+        : "Based on your investment-type transactions. Add more from manual entry on the dashboard.";
+    setText("investSummaryNote", note);
+
+    const listEl = $("investList");
+    if (listEl) {
+      listEl.innerHTML = "";
+      if (!entries.length) {
+        listEl.innerHTML = `<div class="muted">No investment entries yet. Start by logging one from the dashboard manual entry form.</div>`;
+      } else {
+        const tx = getInvestmentTx(model).slice().sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+        for (const t of tx) {
+          const row = document.createElement("div");
+          row.className = "invest-row";
+          row.innerHTML = `
+            <div class="invest-row__main">
+              <div class="invest-row__name">${escapeHtml(t.merchant || "Investment")}</div>
+              <div class="invest-row__meta">${escapeHtml(t.category || "Investment")} • ${t.type === "investment" ? "Investment" : "Expense"}</div>
+            </div>
+            <div class="invest-row__amt">${fmtINR(Number(t.amount || 0) || 0)}</div>
+            <div class="invest-row__date">${escapeHtml(t.date || "—")}</div>
+          `;
+          listEl.appendChild(row);
+        }
+      }
+    }
+
+    const pieEl = $("investPie");
+    if (pieEl) {
+      const labels = entries.map(([name]) => name);
+      const values = entries.map(([, v]) => v.amount);
+      const total = values.reduce((a, b) => a + b, 0) || 1;
+      const colors = labels.map((_, i) => {
+        const palette = ["#2cf2a0", "#2f8cff", "#7c5cff", "#15e2ff", "#ffb648", "#ff4d7d"];
+        return palette[i % palette.length];
+      });
+      if (pieChart) pieChart.destroy();
+      pieChart = new Chart(pieEl, {
+        type: "doughnut",
+        data: {
+          labels,
+          datasets: [
+            {
+              data: values,
+              backgroundColor: colors,
+              borderColor: "rgba(7,10,19,0.85)",
+              borderWidth: 2,
+              hoverOffset: 6,
+              borderRadius: 8,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          cutout: "64%",
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: "rgba(0,0,0,0.75)",
+              borderColor: "rgba(255,255,255,0.10)",
+              borderWidth: 1,
+              padding: 10,
+              callbacks: {
+                label: (item) => {
+                  const v = item.raw ?? 0;
+                  const pct = v / total;
+                  return ` ${item.label}: ${fmtINR(v)} (${fmtPct(pct)})`;
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+
+    if (window.lucide?.createIcons) window.lucide.createIcons();
+  }
+
   function bootTransactionsFilters() {
     const tx = getTx(model);
     const catSel = $("txCategory");
@@ -1123,6 +1243,7 @@
       renderTransactionsPage();
     }
     if (route === "subscriptions") renderSubscriptionsPage();
+    if (route === "investments") renderInvestmentsPage();
     if (route === "settings") {
       applyTheme(getTheme());
       bootFeedback();
@@ -1319,6 +1440,50 @@
     $("btnUploadImg")?.addEventListener("click", () => $("fileImg")?.click());
     $("filePdf")?.addEventListener("change", (e) => simulateAnalysis(e.target.files?.[0] ?? null));
     $("fileImg")?.addEventListener("change", (e) => simulateAnalysis(e.target.files?.[0] ?? null));
+
+    // Manual entry (no bill available)
+    $("manualEntryForm")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const typeSel = $("manualType");
+      const catSel = $("manualCategory");
+      const nameInput = $("manualName");
+      const amtInput = $("manualAmount");
+      const dateInput = $("manualDate");
+      const hint = $("manualEntryHint");
+
+      const type = typeSel?.value === "investment" ? "investment" : "expense";
+      const categoryRaw = catSel?.value || (type === "investment" ? "Investment" : "Shopping");
+      const category = type === "investment" ? "Investment" : categoryRaw;
+      const merchant = nameInput?.value?.trim() || (type === "investment" ? "Manual investment" : "Manual expense");
+      const amount = Number(amtInput?.value || 0) || 0;
+      const date = dateInput?.value || isoDateDaysAgo(0);
+
+      if (!merchant || !amount || amount <= 0) return;
+
+      model.transactions = Array.isArray(model.transactions) ? model.transactions : [];
+      model.transactions.unshift({
+        id: uid(),
+        date,
+        type,
+        category,
+        merchant,
+        amount: Math.round(amount),
+      });
+
+      renderAll();
+      if (isAuthed()) {
+        tickBudgetNotifs();
+      }
+      if (hint) {
+        hint.textContent = "Added. Dashboard and investments updated.";
+        setTimeout(() => {
+          const h = $("manualEntryHint");
+          if (h) h.textContent = "This will immediately update your dashboard, charts, and health score.";
+        }, 1600);
+      }
+      if (nameInput) nameInput.value = "";
+      if (amtInput) amtInput.value = "";
+    });
 
     // Chat
     bootChat();

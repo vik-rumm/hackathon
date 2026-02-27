@@ -871,6 +871,122 @@ canvas{max-width:100%;}
 }
 .upload__note{font-size:12px; color: var(--muted2); line-height:1.4}
 
+.manual-entry{
+  border-radius: 16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.20);
+  padding: 12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.manual-entry__header{display:flex; flex-direction:column; gap:4px}
+.manual-entry__title{
+  font-size:13px;
+  font-weight:700;
+}
+.manual-entry__subtitle{
+  font-size:12px;
+  color: var(--muted2);
+}
+.manual-entry__grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+.manual-entry__row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.manual-entry__submit{
+  flex-shrink:0;
+}
+
+.grid--invest{
+  grid-template-columns: 1.4fr 1.6fr;
+  align-items:start;
+}
+.invest-summary{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:12px;
+}
+.invest-summary__row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+}
+.invest-summary__k{
+  font-size:12px;
+  color: var(--muted2);
+}
+.invest-summary__v{
+  font-size:16px;
+  font-weight:800;
+  font-family:"Space Grotesk", Inter, system-ui, sans-serif;
+}
+.invest-summary__note{
+  font-size:12px;
+}
+.invest-chart{
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  padding:10px;
+}
+.invest-list{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  max-height:520px;
+  overflow:auto;
+  padding-right:4px;
+}
+.invest-row{
+  display:grid;
+  grid-template-columns: 1.4fr 0.9fr 0.9fr;
+  gap:10px;
+  align-items:center;
+  padding:10px 10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+}
+.invest-row__main{
+  min-width:0;
+}
+.invest-row__name{
+  font-size:13px;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.invest-row__meta{
+  margin-top:4px;
+  font-size:12px;
+  color: var(--muted2);
+}
+.invest-row__amt{
+  font-family:var(--mono);
+  font-size:13px;
+  font-weight:700;
+}
+.invest-row__date{
+  font-size:12px;
+  color: var(--muted2);
+  text-align:right;
+}
+
 .chat{display:flex; flex-direction:column; gap:10px; height: 360px;}
 .card--chat{display:flex; flex-direction:column;}
 .card--chat .chat{flex:1}
