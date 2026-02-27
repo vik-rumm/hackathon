@@ -80,10 +80,6 @@
                 <i data-lucide="sparkles"></i>
                 Refresh AI insights
               </button>
-              <button class="chip chip--ghost" type="button" id="chipDemo">
-                <i data-lucide="wand-2"></i>
-                Load demo data
-              </button>
             </div>
           </div>
 
@@ -206,19 +202,10 @@
                     Log in
                   </button>
 
-                  <div class="ig-divider" aria-hidden="true">
-                    <span>OR</span>
-                  </div>
-
-                  <button class="btn btn--secondary btn--block" id="btnDemoLogin" type="button">
-                    <i data-lucide="wand-2"></i>
-                    Continue with demo
-                  </button>
-
                   <button class="text-link" id="btnForgot" type="button">Forgot password?</button>
 
                   <div class="form__hint muted">
-                    Demo login (no backend). Your session + profile save locally in this browser.
+                    Your data stays on this device unless you connect a backend.
                   </div>
                 </form>
               </div>
@@ -235,86 +222,95 @@
 
         <section class="route is-active" id="route-dashboard" data-route="dashboard">
           <div class="grid grid--top">
-            <!-- Health Score -->
-            <section class="card card--hero reveal" aria-label="Financial Health Score">
+            <!-- Upload + Manual entry moved to hero -->
+            <section class="card card--hero reveal" aria-label="Upload documents or add manually">
               <div class="card__head">
                 <div>
-                  <div class="card__eyebrow">Financial Health</div>
-                  <div class="card__title">Health Score</div>
+                  <div class="card__eyebrow">AI ingestion</div>
+                  <div class="card__title">Upload Statements & Bills</div>
                 </div>
-                <div class="pill">
-                  <i data-lucide="shield-check"></i>
-                  <span id="scoreLabel">Stable</span>
+                <div class="hint">
+                  <i data-lucide="upload-cloud"></i>
+                  PDF or Image • or add manually
                 </div>
               </div>
 
-              <div class="hero">
-                <div class="score">
-                  <div class="score__ring" role="img" aria-label="Health score indicator">
-                    <svg class="score__svg" viewBox="0 0 120 120" aria-hidden="true">
-                      <defs>
-                        <linearGradient id="gradScore" x1="0" y1="0" x2="1" y2="1">
-                          <stop offset="0%" stop-color="#7c5cff" />
-                          <stop offset="60%" stop-color="#2f8cff" />
-                          <stop offset="100%" stop-color="#15e2ff" />
-                        </linearGradient>
-                        <filter id="glow">
-                          <feGaussianBlur stdDeviation="2.4" result="coloredBlur" />
-                          <feMerge>
-                            <feMergeNode in="coloredBlur" />
-                            <feMergeNode in="SourceGraphic" />
-                          </feMerge>
-                        </filter>
-                      </defs>
-                      <circle class="score__track" cx="60" cy="60" r="48" />
-                      <circle class="score__progress" cx="60" cy="60" r="48" />
-                    </svg>
-                    <div class="score__center">
-                      <div class="score__value" id="healthScore">—</div>
-                      <div class="score__hint">/ 100</div>
+              <div class="upload">
+                <form class="manual-entry" id="manualEntryForm">
+                  <div class="manual-entry__header">
+                    <div class="manual-entry__title">No bill? Quick add entry</div>
+                    <div class="manual-entry__subtitle">Save an expense or investment without a document.</div>
+                  </div>
+                  <div class="manual-entry__grid">
+                    <div class="field">
+                      <label class="field__label" for="manualType">Type</label>
+                      <select class="input input--select" id="manualType" required>
+                        <option value="expense">Expense</option>
+                        <option value="investment">Investment</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="manualCategory">Category</label>
+                      <select class="input input--select" id="manualCategory" required>
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="EMI">EMI / Rent</option>
+                        <option value="Subscriptions">Subscriptions</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Other">Other</option>
+                      </select>
                     </div>
                   </div>
-                  <div class="score__meta">
-                    <div class="kv">
-                      <div class="kv__k">Trend</div>
-                      <div class="kv__v" id="trendText">—</div>
+                  <div class="manual-entry__grid">
+                    <div class="field">
+                      <label class="field__label" for="manualName">Item / Investment name</label>
+                      <input class="input" id="manualName" type="text" placeholder="e.g. SIP, Grocery bill" required />
                     </div>
-                    <div class="kv">
-                      <div class="kv__k">Next action</div>
-                      <div class="kv__v" id="nextAction">—</div>
+                    <div class="field">
+                      <label class="field__label" for="manualAmount">Amount (₹)</label>
+                      <input class="input" id="manualAmount" type="number" min="1" step="1" placeholder="0" required />
                     </div>
                   </div>
-                </div>
-
-                <!-- AI Summary -->
-                <div class="ai-summary">
-                  <div class="ai-summary__head">
-                    <div class="ai-badge">
-                      <i data-lucide="bot"></i>
-                      AI Summary
+                  <div class="manual-entry__row">
+                    <div class="field">
+                      <label class="field__label" for="manualDate">Date</label>
+                      <input class="input input--date" id="manualDate" type="date" />
                     </div>
-                    <button class="link-btn" id="btnRegenerateSummary" type="button">
-                      Regenerate
-                      <i data-lucide="refresh-cw"></i>
+                    <button class="btn btn--secondary manual-entry__submit" type="submit">
+                      <i data-lucide="plus-circle"></i>
+                      Save entry
                     </button>
                   </div>
-                  <div class="ai-summary__body" id="aiSummary">
-                    Loading your insights…
+                  <div class="form__hint muted" id="manualEntryHint">
+                    This will immediately update your dashboard, charts, and investments.
                   </div>
-                  <div class="ai-summary__footer">
-                    <div class="tag" id="riskTag">
-                      <i data-lucide="activity"></i>
-                      Risk: —
-                    </div>
-                    <div class="tag" id="budgetTag">
-                      <i data-lucide="target"></i>
-                      Budget: —
-                    </div>
-                    <div class="tag" id="subsTag">
-                      <i data-lucide="repeat"></i>
-                      Subscriptions: —
-                    </div>
-                  </div>
+                </form>
+
+                <div class="upload__actions">
+                  <input id="filePdf" type="file" accept="application/pdf" hidden />
+                  <input id="fileImg" type="file" accept="image/*" hidden />
+
+                  <button class="btn" id="btnUploadPdf" type="button">
+                    <i data-lucide="file-text"></i>
+                    Upload PDF
+                  </button>
+                  <button class="btn btn--secondary" id="btnUploadImg" type="button">
+                    <i data-lucide="image"></i>
+                    Upload Image
+                  </button>
+                </div>
+
+                <div class="upload__status" id="uploadStatus" aria-live="polite">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  <span id="uploadStatusText">Ready for upload or manual entry.</span>
+                </div>
+
+                <div class="upload__note">
+                  Tip: For best results, upload your monthly bank statement and 3–5 bill screenshots, or log important
+                  expenses and investments manually above.
                 </div>
               </div>
             </section>
@@ -450,99 +446,6 @@
           </div>
 
           <div class="grid grid--bottom">
-            <!-- Upload + Manual entry -->
-            <section class="card reveal" aria-label="Upload documents or add manually">
-              <div class="card__head">
-                <div>
-                  <div class="card__eyebrow">AI ingestion</div>
-                  <div class="card__title">Upload Statements & Bills</div>
-                </div>
-                <div class="hint">
-                  <i data-lucide="upload-cloud"></i>
-                  PDF or Image • or add manually
-                </div>
-              </div>
-
-              <div class="upload">
-                <form class="manual-entry" id="manualEntryForm">
-                  <div class="manual-entry__header">
-                    <div class="manual-entry__title">No bill? Quick add entry</div>
-                    <div class="manual-entry__subtitle">Add an expense or investment without a document.</div>
-                  </div>
-                  <div class="manual-entry__grid">
-                    <div class="field">
-                      <label class="field__label" for="manualType">Type</label>
-                      <select class="input input--select" id="manualType" required>
-                        <option value="expense">Expense</option>
-                        <option value="investment">Investment</option>
-                      </select>
-                    </div>
-                    <div class="field">
-                      <label class="field__label" for="manualCategory">Category</label>
-                      <select class="input input--select" id="manualCategory" required>
-                        <option value="Food">Food</option>
-                        <option value="Coffee">Coffee</option>
-                        <option value="Travel">Travel</option>
-                        <option value="Shopping">Shopping</option>
-                        <option value="EMI">EMI / Rent</option>
-                        <option value="Subscriptions">Subscriptions</option>
-                        <option value="Investment">Investment</option>
-                        <option value="Utilities">Utilities</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="manual-entry__grid">
-                    <div class="field">
-                      <label class="field__label" for="manualName">Item / Investment name</label>
-                      <input class="input" id="manualName" type="text" placeholder="e.g. SIP, Grocery bill" required />
-                    </div>
-                    <div class="field">
-                      <label class="field__label" for="manualAmount">Amount (₹)</label>
-                      <input class="input" id="manualAmount" type="number" min="1" step="1" placeholder="0" required />
-                    </div>
-                  </div>
-                  <div class="manual-entry__row">
-                    <div class="field">
-                      <label class="field__label" for="manualDate">Date</label>
-                      <input class="input input--date" id="manualDate" type="date" />
-                    </div>
-                    <button class="btn btn--secondary manual-entry__submit" type="submit">
-                      <i data-lucide="plus-circle"></i>
-                      Add to dashboard
-                    </button>
-                  </div>
-                  <div class="form__hint muted" id="manualEntryHint">
-                    This will immediately update your dashboard, charts, and health score.
-                  </div>
-                </form>
-
-                <div class="upload__actions">
-                  <input id="filePdf" type="file" accept="application/pdf" hidden />
-                  <input id="fileImg" type="file" accept="image/*" hidden />
-
-                  <button class="btn" id="btnUploadPdf" type="button">
-                    <i data-lucide="file-text"></i>
-                    Upload PDF
-                  </button>
-                  <button class="btn btn--secondary" id="btnUploadImg" type="button">
-                    <i data-lucide="image"></i>
-                    Upload Image
-                  </button>
-                </div>
-
-                <div class="upload__status" id="uploadStatus" aria-live="polite">
-                  <span class="status-dot" aria-hidden="true"></span>
-                  <span id="uploadStatusText">Ready for upload or manual entry.</span>
-                </div>
-
-                <div class="upload__note">
-                  Tip: For best results, upload your monthly bank statement and 3–5 bill screenshots, or log important
-                  expenses and investments manually above.
-                </div>
-              </div>
-            </section>
-
             <!-- Chat -->
             <section class="card card--chat reveal" aria-label="AI chat assistant">
               <div class="card__head">

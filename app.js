@@ -51,68 +51,20 @@
     return d.toISOString().slice(0, 10);
   };
 
-  const DEFAULT_DATA = () => ({
+  const EMPTY_MODEL = () => ({
     month: new Date().toLocaleString(undefined, { month: "long", year: "numeric" }),
     currency: "INR",
-    totalIncome: 120000,
-    budgetLimit: 65000,
-    // Expenses by category (this month)
-    expenses: {
-      Food: 14600,
-      Coffee: 2400,
-      Travel: 9100,
-      Shopping: 11800,
-      EMI: 16800,
-      Subscriptions: 1499,
-      Investments: 18500, // included in breakdown per spec
-    },
-    // Investments total (can be different from "Investments" category if you want to track separately)
-    totalInvestments: 18500,
-    subscriptions: [
-      { name: "Netflix", monthly: 649, icon: "tv" },
-      { name: "Disney+ Hotstar", monthly: 299, icon: "sparkles" },
-      { name: "Spotify", monthly: 119, icon: "music" },
-      { name: "YouTube Premium", monthly: 129, icon: "play" },
-      { name: "Amazon Prime", monthly: 299, icon: "package" },
-      { name: "Apple Music", monthly: 99, icon: "headphones" },
-      { name: "Google One", monthly: 130, icon: "cloud" },
-      { name: "iCloud+", monthly: 149, icon: "cloud" },
-      { name: "Swiggy One", monthly: 149, icon: "shopping-bag" },
-      { name: "Zomato Gold", monthly: 199, icon: "utensils" },
-      { name: "Notion AI", monthly: 154, icon: "sparkles" },
-    ],
-    transactions: [
-      // Income
-      { id: uid(), date: isoDateDaysAgo(2), type: "income", category: "Income", merchant: "Salary", amount: 105000 },
-      { id: uid(), date: isoDateDaysAgo(7), type: "income", category: "Income", merchant: "Freelance", amount: 15000 },
-
-      // Expenses
-      { id: uid(), date: isoDateDaysAgo(0), type: "expense", category: "Food", merchant: "Lunch", amount: 420 },
-      { id: uid(), date: isoDateDaysAgo(0), type: "expense", category: "Coffee", merchant: "Cafe", amount: 180 },
-      { id: uid(), date: isoDateDaysAgo(1), type: "expense", category: "Travel", merchant: "Metro", amount: 220 },
-      { id: uid(), date: isoDateDaysAgo(1), type: "expense", category: "Shopping", merchant: "Store", amount: 1750 },
-      { id: uid(), date: isoDateDaysAgo(2), type: "expense", category: "Rent", merchant: "Rent", amount: 18000 },
-      { id: uid(), date: isoDateDaysAgo(2), type: "expense", category: "Utilities", merchant: "Electricity", amount: 1420 },
-      { id: uid(), date: isoDateDaysAgo(3), type: "expense", category: "EMI", merchant: "EMI", amount: 8400 },
-      { id: uid(), date: isoDateDaysAgo(3), type: "expense", category: "Split", merchant: "Friends split", amount: 980 },
-      { id: uid(), date: isoDateDaysAgo(4), type: "expense", category: "Food", merchant: "Groceries", amount: 3260 },
-      { id: uid(), date: isoDateDaysAgo(5), type: "expense", category: "Travel", merchant: "Cab", amount: 560 },
-      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "Netflix", amount: 649 },
-      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "Hotstar", amount: 299 },
-      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "Spotify", amount: 119 },
-      { id: uid(), date: isoDateDaysAgo(6), type: "expense", category: "Subscriptions", merchant: "YouTube Premium", amount: 129 },
-      { id: uid(), date: isoDateDaysAgo(8), type: "expense", category: "Shopping", merchant: "Online", amount: 2899 },
-      { id: uid(), date: isoDateDaysAgo(9), type: "expense", category: "Food", merchant: "Dinner", amount: 780 },
-
-      // Investments
-      { id: uid(), date: isoDateDaysAgo(1), type: "investment", category: "Investment", merchant: "SIP (Index Fund)", amount: 12000 },
-      { id: uid(), date: isoDateDaysAgo(8), type: "investment", category: "Investment", merchant: "Stocks", amount: 6500 },
-    ],
-    trend: "↑ +6 pts vs last month",
+    totalIncome: 0,
+    budgetLimit: 0,
+    expenses: {},
+    totalInvestments: 0,
+    subscriptions: [],
+    transactions: [],
+    trend: "No history yet",
   });
 
-  /** @type {ReturnType<typeof DEFAULT_DATA>} */
-  let model = DEFAULT_DATA();
+  /** @type {ReturnType<typeof EMPTY_MODEL>} */
+  let model = EMPTY_MODEL();
   let currentSearch = "";
 
   // -----------------------------
@@ -586,6 +538,7 @@
     renderPie(model);
     renderBar(model);
     setText("buildStamp", `Updated ${nowStamp()}`);
+    saveModelForCurrentUser();
   }
 
   function renderProfile() {
@@ -600,6 +553,53 @@
     if (pi) pi.value = name;
     if (pe) pe.value = u.email;
     setText("avatarInitials", initialsFrom(name));
+  }
+
+  // -----------------------------
+  // Per-user model storage
+  // -----------------------------
+  function currentUserModelKey() {
+    const u = getUser();
+    if (!u || !u.email) return null;
+    return `model:${u.email}`;
+  }
+
+  function loadModelForCurrentUser() {
+    const key = currentUserModelKey();
+    if (!key) {
+      model = EMPTY_MODEL();
+      return;
+    }
+    const raw = storage.get(key);
+    if (!raw) {
+      model = EMPTY_MODEL();
+      return;
+    }
+    try {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") {
+        model = {
+          ...EMPTY_MODEL(),
+          ...parsed,
+          transactions: Array.isArray(parsed.transactions) ? parsed.transactions : [],
+          subscriptions: Array.isArray(parsed.subscriptions) ? parsed.subscriptions : [],
+        };
+      } else {
+        model = EMPTY_MODEL();
+      }
+    } catch {
+      model = EMPTY_MODEL();
+    }
+  }
+
+  function saveModelForCurrentUser() {
+    const key = currentUserModelKey();
+    if (!key) return;
+    try {
+      storage.set(key, JSON.stringify(model));
+    } catch {
+      // ignore
+    }
   }
 
   // -----------------------------
@@ -1354,7 +1354,6 @@
     // Chips
     $("chipRefresh")?.addEventListener("click", () => refreshAI());
     $("btnRegenerateSummary")?.addEventListener("click", () => renderAISummary(model));
-    $("chipDemo")?.addEventListener("click", () => loadDemoData());
 
     // Login (Instagram-like demo)
     const loginError = $("loginError");
@@ -1378,16 +1377,9 @@
       }
       showLoginError("");
       setUser({ email, name: email.split("@")[0] });
+      loadModelForCurrentUser();
       renderProfile();
       setUploadStatus("", "Signed in. Welcome back.");
-      setRoute("dashboard");
-    });
-
-    $("btnDemoLogin")?.addEventListener("click", () => {
-      showLoginError("");
-      setUser({ email: "demo@aimoneycoach.app", name: "Demo User" });
-      renderProfile();
-      loadDemoData();
       setRoute("dashboard");
     });
 
@@ -1518,18 +1510,20 @@
 
     bootRevealObserver();
 
-    // Initial render
-    renderAll();
-    tickBudgetNotifs();
-    setInterval(() => {
-      if (!isAuthed()) return;
-      tickBudgetNotifs();
-    }, 45000);
-    // Start on login if signed out
+    // Initial render (empty until user logs in)
     if (isAuthed()) {
+      loadModelForCurrentUser();
       renderProfile();
+      renderAll();
+      tickBudgetNotifs();
+      setInterval(() => {
+        if (!isAuthed()) return;
+        tickBudgetNotifs();
+      }, 45000);
       setRoute("dashboard");
     } else {
+      model = EMPTY_MODEL();
+      renderAll();
       setRoute("login");
     }
   }
