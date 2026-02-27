@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | AI Money Coach</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        .login-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            padding: 2rem;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .login-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .login-card h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card p {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 16px 14px 45px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--gradient-primary);
+            border: none;
+            border-radius: var(--radius-md);
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .social-login {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .social-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .divider:not(:empty)::before {
+            margin-right: .25em;
+        }
+
+        .divider:not(:empty)::after {
+            margin-left: .25em;
+        }
+    </style>
+</head>
+
+<body class="login-page">
+
+    <div class="card login-card glassmorphism neon-border">
+        <div class="login-logo gradient-text">
+            <i class="fa-solid fa-robot"></i>
+        </div>
+        <h1><span class="gradient-text">AI</span> Money Coach</h1>
+        <p>Login to your smart financial dashboard</p>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="input-group">
+                <i class="fa-solid fa-envelope"></i>
+                <input type="email" placeholder="Email Address" required value="alex@example.com">
+            </div>
+
+            <div class="input-group">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" placeholder="Password" required value="password123">
+            </div>
+
+            <div style="text-align: right; margin-bottom: 1.5rem;">
+                <a href="#" style="color: var(--accent-blue); font-size: 0.85rem;">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-btn">Sign In to Dashboard <i class="fa-solid fa-arrow-right"
+                    style="margin-left: 8px;"></i></button>
+        </form>
+
+        <div class="divider">OR CONTINUE WITH</div>
+
+        <div class="social-login">
+            <button class="social-btn"><i class="fa-brands fa-google"></i> Google</button>
+            <button class="social-btn"><i class="fa-brands fa-apple"></i> Apple</button>
+        </div>
+
+        <p style="margin-bottom: 0; font-size: 0.9rem;">
+            Don't have an account? <a href="#" style="color: var(--accent-purple); font-weight: 500;">Sign up</a>
+        </p>
+    </div>
+
+    <script>
+        function handleLogin(e) {
+            e.preventDefault();
+            // Add a simple loading state
+            const btn = document.querySelector('.login-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Authenticating...';
+            btn.style.opacity = '0.8';
+
+            // Simulate API call and redirect
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

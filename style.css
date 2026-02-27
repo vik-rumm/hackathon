@@ -6,7 +6,7 @@
     --text-primary: #FFFFFF;
     --text-secondary: #94A3B8;
     --border-color: rgba(255, 255, 255, 0.08);
-    
+
     /* Brand Gradients & Colors */
     --accent-blue: #3B82F6;
     --accent-purple: #8B5CF6;
@@ -14,21 +14,21 @@
     --gradient-primary: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     --gradient-success: linear-gradient(135deg, #10B981, #14B8A6);
     --gradient-warning: linear-gradient(135deg, #F59E0B, #EF4444);
-    
+
     /* Specific Colors */
     --success: #10B981;
     --danger: #EF4444;
     --warning: #F59E0B;
-    
+
     /* Glassmorphism */
     --glass-bg: rgba(18, 23, 33, 0.7);
     --glass-border: rgba(255, 255, 255, 0.05);
     --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    
+
     /* Typography */
     --font-heading: 'Clash Display', sans-serif;
     --font-body: 'Inter', sans-serif;
-    
+
     /* Sizing & Spacing */
     --sidebar-width: 260px;
     --radius-lg: 20px;
@@ -53,13 +53,18 @@ body {
     font-size: 14px;
     line-height: 1.5;
     overflow-x: hidden;
-    background-image: 
+    background-image:
         radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
         radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
     background-attachment: fixed;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     font-family: var(--font-heading);
     font-weight: 600;
 }
@@ -143,11 +148,13 @@ ul {
     margin-top: var(--spacing-sm);
 }
 
-.sidebar-nav ul li, .sidebar-footer ul li {
+.sidebar-nav ul li,
+.sidebar-footer ul li {
     margin-bottom: 8px;
 }
 
-.sidebar-nav a, .sidebar-footer a {
+.sidebar-nav a,
+.sidebar-footer a {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -157,13 +164,15 @@ ul {
     font-weight: 500;
 }
 
-.sidebar-nav a i, .sidebar-footer a i {
+.sidebar-nav a i,
+.sidebar-footer a i {
     width: 20px;
     text-align: center;
     font-size: 1.1rem;
 }
 
-.sidebar-nav a:hover, .sidebar-footer a:hover,
+.sidebar-nav a:hover,
+.sidebar-footer a:hover,
 .sidebar-nav li.active a {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-primary);
@@ -299,7 +308,10 @@ ul {
 .neon-border::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     border-radius: var(--radius-lg);
     padding: 2px;
     background: var(--gradient-primary);
@@ -519,8 +531,11 @@ ul {
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
+
 .legend-color {
-    width: 12px; height: 12px; border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
 /* Subscriptions */
@@ -572,10 +587,21 @@ ul {
     color: white;
 }
 
-.sub-icon.netflix { background: #E50914; }
-.sub-icon.spotify { background: #1DB954; }
-.sub-icon.gym { background: var(--accent-purple); }
-.sub-icon.prime { background: #00A8E1; }
+.sub-icon.netflix {
+    background: #E50914;
+}
+
+.sub-icon.spotify {
+    background: #1DB954;
+}
+
+.sub-icon.gym {
+    background: var(--accent-purple);
+}
+
+.sub-icon.prime {
+    background: #00A8E1;
+}
 
 .sub-name {
     font-weight: 500;
@@ -670,7 +696,11 @@ ul {
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
 /* AI Chat Assistant */
 .chat-card {
@@ -692,6 +722,7 @@ ul {
 .chat-messages::-webkit-scrollbar {
     width: 4px;
 }
+
 .chat-messages::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: 4px;
@@ -810,6 +841,7 @@ ul {
     .dashboard-grid {
         grid-template-columns: 1fr 1fr;
     }
+
     .layout-right {
         grid-column: span 2;
         display: grid;
@@ -821,6 +853,7 @@ ul {
     .layout-right {
         grid-template-columns: 1fr 1fr;
     }
+
     .chat-card {
         grid-column: span 2;
     }
@@ -830,17 +863,21 @@ ul {
     .sidebar {
         transform: translateX(-100%);
     }
+
     .main-content {
         margin-left: 0;
         padding: 1rem;
     }
+
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
+
     .layout-right {
         grid-column: span 1;
         grid-template-columns: 1fr;
     }
+
     .chat-card {
         grid-column: span 1;
     }

@@ -1,25 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Money Coach | Personal Finance Dashboard</title>
     <meta name="description" content="A modern AI-powered personal finance web application dashboard.">
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link
+        href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar Navigation -->
@@ -41,6 +45,8 @@
             <div class="sidebar-footer">
                 <ul>
                     <li><a href="#"><i class="fa-solid fa-gear"></i> Settings</a></li>
+                    <li><a href="login.html" style="color: var(--danger);"><i
+                                class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a></li>
                 </ul>
             </div>
         </aside>
@@ -57,12 +63,13 @@
                         <i class="fa-regular fa-bell"></i>
                         <span class="badge"></span>
                     </div>
-                    <img src="https://ui-avatars.com/api/?name=Alex+D&background=random&color=fff" alt="User Avatar" class="avatar">
+                    <img src="https://ui-avatars.com/api/?name=Alex+D&background=random&color=fff" alt="User Avatar"
+                        class="avatar">
                 </div>
             </header>
 
             <div class="dashboard-grid">
-                
+
                 <!-- Health Score & AI Summary Col (Left) -->
                 <div class="grid-col layout-left">
                     <!-- Health Score Chart -->
@@ -85,7 +92,9 @@
                             <h3 class="gradient-text"><i class="fa-solid fa-sparkles"></i> AI Insights</h3>
                         </div>
                         <div class="summary-content">
-                            <p>You're on track to save <strong class="highlight">$450</strong> more this month compared to last month. Consider moving <strong class="highlight">$200</strong> from your idle cash to your investment portfolio to maximize returns.</p>
+                            <p>You're on track to save <strong class="highlight">$450</strong> more this month compared
+                                to last month. Consider moving <strong class="highlight">$200</strong> from your idle
+                                cash to your investment portfolio to maximize returns.</p>
                         </div>
                     </div>
 
@@ -165,7 +174,7 @@
 
                 <!-- Right Col (Subscriptions, Upload, Chat) -->
                 <div class="grid-col layout-right">
-                    
+
                     <!-- Subscription Tracker -->
                     <div class="card subscription-card">
                         <div class="card-header">
@@ -213,8 +222,10 @@
                             <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
                             <p>Drag & Drop or Click to Upload</p>
                             <div class="upload-buttons">
-                                <button class="btn btn-outline"><i class="fa-solid fa-file-pdf"></i> PDF Statement</button>
-                                <button class="btn btn-outline"><i class="fa-solid fa-image"></i> Bill Screenshot</button>
+                                <button class="btn btn-outline"><i class="fa-solid fa-file-pdf"></i> PDF
+                                    Statement</button>
+                                <button class="btn btn-outline"><i class="fa-solid fa-image"></i> Bill
+                                    Screenshot</button>
                             </div>
                         </div>
                         <div class="upload-status hidden" id="uploadStatus">
@@ -253,4 +264,5 @@
     <!-- Custom JS -->
     <script src="script.js"></script>
 </body>
+
 </html>
