@@ -194,7 +194,7 @@ function setupUploadSim() {
     };
 }
 
-// 4. Chat Assistant Simulation
+// 4. Chat Assistant with Gemini API
 function setupChatSim() {
     const chatInput = document.getElementById('chatInput');
     const sendBtn = document.querySelector('.btn-send');
@@ -210,11 +210,73 @@ function setupChatSim() {
             innerHTML += `<div class="avatar-small"><i class="fa-solid fa-robot"></i></div>`;
         }
 
-        innerHTML += `<div class="bubble">${text}</div>`;
+        innerHTML += `<div class="bubble"></div>`;
         msgDiv.innerHTML = innerHTML;
+
+        // Parse basic markdown if needed (bolding)
+        const bubble = msgDiv.querySelector('.bubble');
+        bubble.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 
         messagesContainer.appendChild(msgDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        return bubble; // Return bubble to update it if needed (streaming/loading)
+    };
+
+    const callGeminiAPI = async (promptText, loadingBubble) => {
+        let apiKey = localStorage.getItem('gemini_api_key') || 'AIzaSyAoMBlNqe8XJt2cVR10tUrRCHQP_44logc';
+        if (!apiKey) {
+            apiKey = prompt("Please enter your Gemini API Key to use the AI assistant:");
+            if (apiKey) {
+                localStorage.setItem('gemini_api_key', apiKey);
+            } else {
+                loadingBubble.innerText = "API key is required to use the AI assistant. Please refresh and try again.";
+                return;
+            }
+        }
+
+        try {
+            // Provide some context to the AI about the app
+            const systemContext = `You are "AI Money Coach", a helpful and professional personal finance AI assistant inside a modern dark-themed dashboard. 
+            The user (Alex) has a financial health score of 85.
+            Total Income: $6,240
+            Total Expenses: $3,120
+            Investments: $1,500
+            Monthly Budget: $2,500 / $3,000 (83% used).
+            Keep your answers concise, friendly, and formatted nicely. `;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: systemContext + "\nUser: " + promptText }]
+                    }]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const reply = data.candidates[0].content.parts[0].text;
+
+            // Format and update bubble
+            loadingBubble.innerHTML = reply.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+        } catch (error) {
+            console.error("Gemini API Error:", error);
+            if (error.message.includes("400")) {
+                loadingBubble.innerText = "Invalid API Key. Please click Settings or clear your browser data to reset it.";
+                localStorage.removeItem('gemini_api_key');
+            } else {
+                loadingBubble.innerText = "Sorry, I encountered an error while analyzing your data. Please try again later.";
+            }
+        }
     };
 
     const handleSend = () => {
@@ -228,20 +290,11 @@ function setupChatSim() {
         addMessage(text, true);
         chatInput.value = '';
 
-        // Simulate AI typing and response
-        setTimeout(() => {
-            let reply = "I'm analyzing your data...";
+        // Add loading message
+        const loadingBubble = addMessage("Thinking...", false);
 
-            if (text.toLowerCase().includes("overspending") || text.toLowerCase().includes("spend")) {
-                reply = "Based on this month's data, you are spending 15% more on **Food Delivery** and **Shopping** compared to last month. Consider cooking at home to stay within budget.";
-            } else if (text.toLowerCase().includes("phone") || text.toLowerCase().includes("afford")) {
-                reply = "You currently have $1,200 in your flexible savings. A new phone might cost around $1,000. While you can afford it, it will deplete your emergency buffer. I recommend saving $250/mo for 4 months instead.";
-            } else {
-                reply = "That's an interesting question. Looking at your Financial Health score of 85, you are doing great overall. Is there a specific category you want me to analyze?";
-            }
-
-            addMessage(reply, false);
-        }, 1200);
+        // Call Real API
+        callGeminiAPI(text, loadingBubble);
     };
 
     sendBtn.addEventListener('click', handleSend);
@@ -311,25 +364,25 @@ function setupInteractions() {
     // Add Toast Styles Dynamically (if not in CSS)
     const style = document.createElement('style');
     style.innerHTML = `
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--gradient-primary);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            z-index: 1000;
-            opacity: 0;
-            transition: all 0.3s ease;
-            box-shadow: var(--glass-shadow);
-        }
+                    .toast {
+                        position: fixed;
+                        bottom: 20px;
+                        left: 50 %;
+                        transform: translateX(-50 %) translateY(100px);
+            background: var(--gradient - primary);
+                color: white;
+                padding: 10px 20px;
+                border - radius: 20px;
+                font - size: 0.9rem;
+                z - index: 1000;
+                opacity: 0;
+                transition: all 0.3s ease;
+                box - shadow: var(--glass - shadow);
+            }
         .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
+        transform: translateX(-50 %) translateY(0);
+        opacity: 1;
+    }
     `;
     document.head.appendChild(style);
 }
@@ -342,7 +395,7 @@ function showToast(message) {
 
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${message}`;
+    toast.innerHTML = `< i class="fa-solid fa-circle-info" ></i > ${message} `;
     document.body.appendChild(toast);
 
     // Trigger animation
