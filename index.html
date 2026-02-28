@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Money Coach — Personal Finance Dashboard</title>
+    <meta
+      name="description"
+      content="AI Money Coach — a modern AI-powered personal finance dashboard. Track expenses, budgets, subscriptions, investments, and chat with your money assistant."
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <aside class="sidebar" aria-label="Sidebar Navigation">
+        <div class="brand">
+          <div class="brand__mark" aria-hidden="true">
+            <div class="brand__orb"></div>
+          </div>
+          <div class="brand__text">
+            <div class="brand__title">AI Money Coach</div>
+            <div class="brand__subtitle">personal finance dashboard</div>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav__item is-active" data-route="dashboard" type="button">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Dashboard</span>
+          </button>
+          <button class="nav__item" data-route="transactions" type="button">
+            <i data-lucide="receipt"></i>
+            <span>Transactions</span>
+          </button>
+          <button class="nav__item" data-route="subscriptions" type="button">
+            <i data-lucide="repeat"></i>
+            <span>Subscriptions</span>
+          </button>
+          <button class="nav__item" data-route="investments" type="button">
+            <i data-lucide="trending-up"></i>
+            <span>Investments</span>
+          </button>
+          <button class="nav__item" data-route="settings" type="button">
+            <i data-lucide="settings"></i>
+            <span>Settings</span>
+          </button>
+          <button class="nav__item" data-route="profile" type="button">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+          </button>
+        </nav>
+
+        <div class="sidebar__footer">
+          <div class="mini-card">
+            <div class="mini-card__title">Today</div>
+            <div class="mini-card__value" id="todayDate">—</div>
+            <div class="mini-card__hint">Keep momentum. Small wins stack.</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar__left">
+            <div class="page-title">
+              <div class="page-title__kicker">Welcome back</div>
+              <h1 class="page-title__h1" id="pageTitle">Dashboard</h1>
+            </div>
+            <div class="chips">
+              <button class="chip" type="button" id="chipRefresh">
+                <i data-lucide="sparkles"></i>
+                Refresh AI insights
+              </button>
+              <button class="chip chip--ghost" type="button" id="chipDemo">
+                <i data-lucide="wand-2"></i>
+                Load demo data
+              </button>
+            </div>
+          </div>
+
+          <div class="topbar__right">
+            <div class="search" role="search">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <input
+                id="searchBox"
+                type="text"
+                inputmode="search"
+                placeholder="Search transactions, subscriptions…"
+                aria-label="Search"
+              />
+            </div>
+            <div class="notif">
+              <button class="icon-btn" id="btnNotif" type="button" aria-label="Notifications">
+              <i data-lucide="bell"></i>
+                <span class="dot" id="notifDot" aria-hidden="true"></span>
+              </button>
+              <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications" aria-hidden="true">
+                <div class="notif-panel__head">
+                  <div class="notif-panel__title">Notifications</div>
+                  <button class="link-btn" id="btnNotifClear" type="button">
+                    Clear
+                    <i data-lucide="trash-2"></i>
+                  </button>
+                </div>
+                <div class="notif-panel__list" id="notifList"></div>
+                <div class="notif-panel__foot muted" id="notifFoot">You’re all caught up.</div>
+              </div>
+            </div>
+            <button class="avatar" id="avatarBtn" type="button" aria-label="Open profile">
+              <div class="avatar__ring"></div>
+              <div class="avatar__initials" id="avatarInitials">PC</div>
+            </button>
+          </div>
+        </header>
+
+        <!-- ROUTES -->
+        <section class="route" id="route-login" data-route="login">
+          <div class="ig-shell reveal" aria-label="Login">
+            <div class="ig-phone" aria-hidden="true">
+              <div class="ig-phone__frame">
+                <div class="ig-phone__screen">
+                  <div class="ig-phone__glow"></div>
+                  <div class="ig-phone__header">
+                    <div class="ig-phone__logo">AI Money Coach</div>
+                    <div class="ig-phone__chip">
+                      <i data-lucide="sparkles"></i>
+                      Live insights
+                    </div>
+                  </div>
+                  <div class="ig-phone__cards">
+                    <div class="ig-mini">
+                      <div class="ig-mini__k">Health</div>
+                      <div class="ig-mini__v"><span class="ig-mini__dot"></span> 78</div>
+                    </div>
+                    <div class="ig-mini">
+                      <div class="ig-mini__k">Budget</div>
+                      <div class="ig-mini__v"><span class="ig-mini__bar"></span></div>
+                    </div>
+                    <div class="ig-mini">
+                      <div class="ig-mini__k">Subscriptions</div>
+                      <div class="ig-mini__v">₹1,499</div>
+                    </div>
+                  </div>
+                  <div class="ig-phone__feed">
+                    <div class="ig-feed__row">
+                      <div class="ig-feed__badge"></div>
+                      <div class="ig-feed__text">
+                        <div class="ig-feed__line"></div>
+                        <div class="ig-feed__line ig-feed__line--short"></div>
+                      </div>
+                    </div>
+                    <div class="ig-feed__row">
+                      <div class="ig-feed__badge"></div>
+                      <div class="ig-feed__text">
+                        <div class="ig-feed__line"></div>
+                        <div class="ig-feed__line ig-feed__line--short"></div>
+                      </div>
+                    </div>
+                    <div class="ig-feed__row">
+                      <div class="ig-feed__badge"></div>
+                      <div class="ig-feed__text">
+                        <div class="ig-feed__line"></div>
+                        <div class="ig-feed__line ig-feed__line--short"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ig-phone__footer">
+                    <span class="ig-phone__pill">AI • analyzing</span>
+                    <span class="ig-phone__pill ig-phone__pill--alt">Budget: on track</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ig-auth">
+              <div class="ig-box">
+                <div class="ig-brand">
+                  <div class="ig-brand__mark" aria-hidden="true"></div>
+                  <div class="ig-brand__word">AI Money Coach</div>
+                  <div class="ig-brand__sub">Sign in to continue</div>
+                </div>
+
+                <form class="form ig-form" id="loginForm">
+                  <div class="field">
+                    <label class="field__label" for="loginEmail">Email</label>
+                    <input class="input" id="loginEmail" type="email" placeholder="Email" autocomplete="email" required />
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="loginPassword">Password</label>
+                    <input class="input" id="loginPassword" type="password" placeholder="Password" autocomplete="current-password" required />
+                  </div>
+
+                  <div class="form__error" id="loginError" role="alert" aria-live="polite"></div>
+
+                  <button class="btn btn--block" id="btnLogin" type="submit">
+                    <i data-lucide="log-in"></i>
+                    Log in
+                  </button>
+
+                  <div class="ig-divider" aria-hidden="true">
+                    <span>OR</span>
+                  </div>
+
+                  <button class="btn btn--secondary btn--block" id="btnDemoLogin" type="button">
+                    <i data-lucide="wand-2"></i>
+                    Continue with demo
+                  </button>
+
+                  <button class="text-link" id="btnForgot" type="button">Forgot password?</button>
+
+                  <div class="form__hint muted">
+                    Demo login (no backend). Your session + profile save locally in this browser.
+                  </div>
+                </form>
+              </div>
+
+              <div class="ig-box ig-box--thin">
+                <div class="ig-signup">
+                  <span>Don’t have an account?</span>
+                  <button class="text-link text-link--accent" id="btnSignup" type="button">Sign up</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="route is-active" id="route-dashboard" data-route="dashboard">
+          <div class="grid grid--top">
+            <!-- Health Score -->
+            <section class="card card--hero reveal" aria-label="Financial Health Score">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Financial Health</div>
+                  <div class="card__title">Health Score</div>
+                </div>
+                <div class="pill">
+                  <i data-lucide="shield-check"></i>
+                  <span id="scoreLabel">Stable</span>
+                </div>
+              </div>
+
+              <div class="hero">
+                <div class="score">
+                  <div class="score__ring" role="img" aria-label="Health score indicator">
+                    <svg class="score__svg" viewBox="0 0 120 120" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="gradScore" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%" stop-color="#7c5cff" />
+                          <stop offset="60%" stop-color="#2f8cff" />
+                          <stop offset="100%" stop-color="#15e2ff" />
+                        </linearGradient>
+                        <filter id="glow">
+                          <feGaussianBlur stdDeviation="2.4" result="coloredBlur" />
+                          <feMerge>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
+                          </feMerge>
+                        </filter>
+                      </defs>
+                      <circle class="score__track" cx="60" cy="60" r="48" />
+                      <circle class="score__progress" cx="60" cy="60" r="48" />
+                    </svg>
+                    <div class="score__center">
+                      <div class="score__value" id="healthScore">—</div>
+                      <div class="score__hint">/ 100</div>
+                    </div>
+                  </div>
+                  <div class="score__meta">
+                    <div class="kv">
+                      <div class="kv__k">Trend</div>
+                      <div class="kv__v" id="trendText">—</div>
+                    </div>
+                    <div class="kv">
+                      <div class="kv__k">Next action</div>
+                      <div class="kv__v" id="nextAction">—</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- AI Summary -->
+                <div class="ai-summary">
+                  <div class="ai-summary__head">
+                    <div class="ai-badge">
+                      <i data-lucide="bot"></i>
+                      AI Summary
+                    </div>
+                    <button class="link-btn" id="btnRegenerateSummary" type="button">
+                      Regenerate
+                      <i data-lucide="refresh-cw"></i>
+                    </button>
+                  </div>
+                  <div class="ai-summary__body" id="aiSummary">
+                    Loading your insights…
+                  </div>
+                  <div class="ai-summary__footer">
+                    <div class="tag" id="riskTag">
+                      <i data-lucide="activity"></i>
+                      Risk: —
+                    </div>
+                    <div class="tag" id="budgetTag">
+                      <i data-lucide="target"></i>
+                      Budget: —
+                    </div>
+                    <div class="tag" id="subsTag">
+                      <i data-lucide="repeat"></i>
+                      Subscriptions: —
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Stat Cards -->
+            <section class="stats reveal" aria-label="Key statistics">
+              <div class="stat-card">
+                <div class="stat-card__icon stat-card__icon--income">
+                  <i data-lucide="arrow-down-left"></i>
+                </div>
+                <div class="stat-card__meta">
+                  <div class="stat-card__k">Total Income</div>
+                  <div class="stat-card__v" id="statIncome">—</div>
+                  <div class="stat-card__s" id="statIncomeHint">—</div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card__icon stat-card__icon--expense">
+                  <i data-lucide="arrow-up-right"></i>
+                </div>
+                <div class="stat-card__meta">
+                  <div class="stat-card__k">Total Expenses</div>
+                  <div class="stat-card__v" id="statExpenses">—</div>
+                  <div class="stat-card__s" id="statExpenseHint">—</div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-card__icon stat-card__icon--invest">
+                  <i data-lucide="line-chart"></i>
+                </div>
+                <div class="stat-card__meta">
+                  <div class="stat-card__k">Total Investments</div>
+                  <div class="stat-card__v" id="statInvestments">—</div>
+                  <div class="stat-card__s" id="statInvestHint">—</div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <div class="grid grid--main">
+            <!-- Expense Breakdown -->
+            <section class="card reveal" aria-label="Expense breakdown">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Spending</div>
+                  <div class="card__title">Expense Breakdown</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="pie-chart"></i>
+                  Categories
+                </div>
+              </div>
+
+              <div class="chart-block">
+                <canvas id="pieExpenses" height="220" aria-label="Expense pie chart"></canvas>
+                <div class="legend" id="pieLegend" aria-label="Expense category legend"></div>
+              </div>
+            </section>
+
+            <!-- Monthly Budget Tracker -->
+            <section class="card reveal" aria-label="Monthly budget tracker">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Budget</div>
+                  <div class="card__title">Monthly Budget Tracker</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="gauge"></i>
+                  This month
+                </div>
+              </div>
+
+              <div class="budget">
+                <div class="budget__row">
+                  <div class="budget__k">Used</div>
+                  <div class="budget__v" id="budgetUsed">—</div>
+                </div>
+                <div class="budget__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                  <div class="budget__fill" id="budgetFill"></div>
+                </div>
+                <div class="budget__row">
+                  <div class="budget__k">Remaining</div>
+                  <div class="budget__v" id="budgetRemaining">—</div>
+                </div>
+                <div class="alert" id="budgetAlert" role="status" aria-live="polite">
+                  <i data-lucide="alert-triangle"></i>
+                  <span>
+                    Heads up — you’ve crossed <strong>80%</strong> of your monthly budget. Consider a “no-spend” weekend.
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <!-- Subscriptions -->
+            <section class="card reveal" aria-label="Subscription tracker">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Subscriptions</div>
+                  <div class="card__title">Subscription Tracker</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="repeat"></i>
+                  Detected
+                </div>
+              </div>
+              <div class="subs">
+                <div class="subs__list" id="subsList"></div>
+                <div class="subs__total">
+                  <div class="subs__total-k">Total / month</div>
+                  <div class="subs__total-v" id="subsTotal">—</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Investment vs Expense -->
+            <section class="card reveal" aria-label="Investment vs expense comparison">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Comparison</div>
+                  <div class="card__title">Investments vs Expenses</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="bar-chart-3"></i>
+                  Totals
+                </div>
+              </div>
+              <div class="chart-block">
+                <canvas id="barCompare" height="220" aria-label="Investment vs expense bar chart"></canvas>
+              </div>
+            </section>
+          </div>
+
+          <div class="grid grid--bottom">
+            <!-- Upload + Manual entry -->
+            <section class="card reveal" aria-label="Upload documents or add manually">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">AI ingestion</div>
+                  <div class="card__title">Upload Statements & Bills</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="upload-cloud"></i>
+                  PDF or Image • or add manually
+                </div>
+              </div>
+
+              <div class="upload">
+                <form class="manual-entry" id="manualEntryForm">
+                  <div class="manual-entry__header">
+                    <div class="manual-entry__title">No bill? Quick add entry</div>
+                    <div class="manual-entry__subtitle">Add an expense or investment without a document.</div>
+                  </div>
+                  <div class="manual-entry__grid">
+                    <div class="field">
+                      <label class="field__label" for="manualType">Type</label>
+                      <select class="input input--select" id="manualType" required>
+                        <option value="expense">Expense</option>
+                        <option value="investment">Investment</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="manualCategory">Category</label>
+                      <select class="input input--select" id="manualCategory" required>
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Travel">Travel</option>
+                        <option value="Shopping">Shopping</option>
+                        <option value="EMI">EMI / Rent</option>
+                        <option value="Subscriptions">Subscriptions</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="manual-entry__grid">
+                    <div class="field">
+                      <label class="field__label" for="manualName">Item / Investment name</label>
+                      <input class="input" id="manualName" type="text" placeholder="e.g. SIP, Grocery bill" required />
+                    </div>
+                    <div class="field">
+                      <label class="field__label" for="manualAmount">Amount (₹)</label>
+                      <input class="input" id="manualAmount" type="number" min="1" step="1" placeholder="0" required />
+                    </div>
+                  </div>
+                  <div class="manual-entry__row">
+                    <div class="field">
+                      <label class="field__label" for="manualDate">Date</label>
+                      <input class="input input--date" id="manualDate" type="date" />
+                    </div>
+                    <button class="btn btn--secondary manual-entry__submit" type="submit">
+                      <i data-lucide="plus-circle"></i>
+                      Add to dashboard
+                    </button>
+                  </div>
+                  <div class="form__hint muted" id="manualEntryHint">
+                    This will immediately update your dashboard, charts, and health score.
+                  </div>
+                </form>
+
+                <div class="upload__actions">
+                  <input id="filePdf" type="file" accept="application/pdf" hidden />
+                  <input id="fileImg" type="file" accept="image/*" hidden />
+
+                  <button class="btn" id="btnUploadPdf" type="button">
+                    <i data-lucide="file-text"></i>
+                    Upload PDF
+                  </button>
+                  <button class="btn btn--secondary" id="btnUploadImg" type="button">
+                    <i data-lucide="image"></i>
+                    Upload Image
+                  </button>
+                </div>
+
+                <div class="upload__status" id="uploadStatus" aria-live="polite">
+                  <span class="status-dot" aria-hidden="true"></span>
+                  <span id="uploadStatusText">Ready for upload or manual entry.</span>
+                </div>
+
+                <div class="upload__note">
+                  Tip: For best results, upload your monthly bank statement and 3–5 bill screenshots, or log important
+                  expenses and investments manually above.
+                </div>
+              </div>
+            </section>
+
+            <!-- Chat -->
+            <section class="card card--chat reveal" aria-label="AI chat assistant">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Assistant</div>
+                  <div class="card__title">AI Chat</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="message-circle"></i>
+                  Ask anything
+                </div>
+              </div>
+
+              <div class="chat">
+                <div class="chat__quick">
+                  <button class="chip chip--small" type="button" data-prompt="Where am I overspending?">
+                    Where am I overspending?
+                  </button>
+                  <button class="chip chip--small" type="button" data-prompt="Can I afford a new phone?">
+                    Can I afford a new phone?
+                  </button>
+                  <button class="chip chip--small" type="button" data-prompt="How can I save 10% more next month?">
+                    Save 10% more next month
+                  </button>
+                </div>
+
+                <div class="chat__log" id="chatLog" aria-live="polite"></div>
+
+                <form class="chat__composer" id="chatForm">
+                  <input
+                    class="chat__input"
+                    id="chatInput"
+                    type="text"
+                    placeholder="Ask: Where am I overspending?"
+                    autocomplete="off"
+                  />
+                  <button class="btn btn--icon" id="chatSend" type="submit" aria-label="Send message">
+                    <i data-lucide="send"></i>
+                  </button>
+                </form>
+              </div>
+            </section>
+          </div>
+        </section>
+
+        <section class="route" id="route-transactions" data-route="transactions">
+          <div class="grid grid--tx">
+            <section class="card reveal" aria-label="Category-wise transactions">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Transactions</div>
+                  <div class="card__title">Category Split</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="filter"></i>
+                  Filters
+                </div>
+              </div>
+
+              <div class="tx-filters">
+                <div class="tx-filters__row">
+                  <div class="field">
+                    <label class="field__label" for="txType">Type</label>
+                    <select class="input input--select" id="txType">
+                      <option value="all">All</option>
+                      <option value="expense">Expenses</option>
+                      <option value="investment">Investments</option>
+                      <option value="income">Income</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="field__label" for="txCategory">Category</label>
+                    <select class="input input--select" id="txCategory">
+                      <option value="all">All categories</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="tx-summary" id="txSummary"></div>
+              </div>
+
+              <div class="tx-cats" id="txCats" aria-label="Category totals"></div>
+            </section>
+
+            <section class="card reveal" aria-label="Transaction history">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">History</div>
+                  <div class="card__title">Date-wise Timeline</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="calendar"></i>
+                  Pick a date
+                </div>
+              </div>
+              <div class="tx-date-filter">
+                <div class="field">
+                  <label class="field__label" for="txDateFilter">Date</label>
+                  <input class="input input--date" id="txDateFilter" type="date" />
+                </div>
+                <button class="chip chip--small" id="txDateClear" type="button">
+                  <i data-lucide="x-circle"></i>
+                  Clear
+                </button>
+              </div>
+
+              <div class="tx-history" id="txHistory"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="route" id="route-subscriptions" data-route="subscriptions">
+          <div class="grid grid--subs">
+            <section class="card reveal" aria-label="All subscriptions">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Subscriptions</div>
+                  <div class="card__title">All Apps</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="repeat"></i>
+                  Monthly
+                </div>
+              </div>
+
+              <div class="subs-page__top">
+                <div class="subs-page__total">
+                  <div class="subs-page__k">Total / month</div>
+                  <div class="subs-page__v" id="subsPageTotal">—</div>
+                  <div class="subs-page__s muted" id="subsPageAnnual">—</div>
+                </div>
+                <div class="subs-page__hint muted">
+                  Tip: cancel 1 low-value subscription to instantly improve your health score.
+                </div>
+              </div>
+
+              <div class="subs-page__list" id="subsPageList"></div>
+            </section>
+
+            <section class="card reveal" aria-label="Subscription insights">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Insights</div>
+                  <div class="card__title">AI Suggestions</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="sparkles"></i>
+                  Optimize
+                </div>
+              </div>
+
+              <div class="insights" id="subsInsights"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="route" id="route-investments" data-route="investments">
+          <div class="grid grid--invest">
+            <section class="card reveal" aria-label="Investment overview">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Investments</div>
+                  <div class="card__title">Portfolio Overview</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="trending-up"></i>
+                  Live from your entries
+                </div>
+              </div>
+
+              <div class="invest-summary">
+                <div class="invest-summary__row">
+                  <div class="invest-summary__k">Total invested (this month)</div>
+                  <div class="invest-summary__v" id="investTotalThisMonth">—</div>
+                </div>
+                <div class="invest-summary__row">
+                  <div class="invest-summary__k">All-time invested</div>
+                  <div class="invest-summary__v" id="investTotalAllTime">—</div>
+                </div>
+                <div class="invest-summary__note muted" id="investSummaryNote">
+                  Add SIPs, one-time stock purchases, or manual investment entries from the dashboard upload section.
+                </div>
+              </div>
+
+              <div class="invest-chart">
+                <canvas id="investPie" height="220" aria-label="Investment allocation chart"></canvas>
+              </div>
+            </section>
+
+            <section class="card reveal" aria-label="Investment entries">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Holdings</div>
+                  <div class="card__title">All Investment Entries</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="list"></i>
+                  From transactions
+                </div>
+              </div>
+
+              <div class="invest-list" id="investList"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="route" id="route-settings" data-route="settings">
+          <div class="grid grid--settings">
+            <section class="card reveal" aria-label="Theme settings">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Appearance</div>
+                  <div class="card__title">Theme</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="palette"></i>
+                  Dark / Bright
+                </div>
+              </div>
+
+              <div class="segmented" role="radiogroup" aria-label="Theme mode">
+                <button class="segmented__btn" id="themeDark" type="button" role="radio" aria-checked="true">
+                  <i data-lucide="moon"></i>
+                  Dark
+                </button>
+                <button class="segmented__btn" id="themeLight" type="button" role="radio" aria-checked="false">
+                  <i data-lucide="sun"></i>
+                  Bright
+                </button>
+              </div>
+
+              <div class="muted" style="margin-top:10px; line-height:1.5">
+                Bright mode improves readability in daylight. Dark mode is designed for a futuristic dashboard feel.
+              </div>
+            </section>
+
+            <section class="card reveal" aria-label="Help and contact">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Help</div>
+                  <div class="card__title">Contact</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="help-circle"></i>
+                  Support
+                </div>
+              </div>
+
+              <div class="contact">
+                <div class="contact__row">
+                  <div class="contact__k"><i data-lucide="phone"></i> Phone</div>
+                  <div class="contact__v">123-xxx-567</div>
+                </div>
+                <div class="contact__row">
+                  <div class="contact__k"><i data-lucide="mail"></i> Gmail</div>
+                  <div class="contact__v">abcxx@gmail.com</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card reveal" aria-label="Feedback">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Feedback</div>
+                  <div class="card__title">Rate & Tell Us</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="star"></i>
+                  5-star
+                </div>
+              </div>
+
+              <form class="form" id="feedbackForm">
+                <div class="field">
+                  <label class="field__label">Rating</label>
+                  <div class="stars" id="feedbackStars" aria-label="Rate from 1 to 5">
+                    <button class="star" type="button" data-star="1" aria-label="1 star"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="2" aria-label="2 stars"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="3" aria-label="3 stars"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="4" aria-label="4 stars"><i data-lucide="star"></i></button>
+                    <button class="star" type="button" data-star="5" aria-label="5 stars"><i data-lucide="star"></i></button>
+                  </div>
+                  <input type="hidden" id="feedbackRating" value="0" />
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="feedbackText">Your opinion</label>
+                  <textarea class="input input--textarea" id="feedbackText" rows="4" placeholder="What did you like? What should we improve?"></textarea>
+                </div>
+
+                <div class="form__actions">
+                  <button class="btn" type="submit">
+                    <i data-lucide="send"></i>
+                    Submit feedback
+                  </button>
+                </div>
+
+                <div class="form__hint muted" id="feedbackHint">Thanks — your feedback helps improve the product.</div>
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <section class="route" id="route-profile" data-route="profile">
+          <div class="grid grid--profile">
+            <section class="card reveal" aria-label="Profile details">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Account</div>
+                  <div class="card__title">Profile</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="user"></i>
+                  Signed in
+                </div>
+              </div>
+
+              <div class="profile">
+                <div class="profile__header">
+                  <div class="profile__avatar" aria-hidden="true">
+                    <div class="profile__avatar-ring"></div>
+                    <div class="profile__avatar-initials" id="profileInitials">—</div>
+                  </div>
+                  <div class="profile__meta">
+                    <div class="profile__name" id="profileName">—</div>
+                    <div class="profile__email" id="profileEmail">—</div>
+                    <div class="profile__pill">
+                      <i data-lucide="sparkles"></i>
+                      <span id="profilePlan">Hackathon Demo</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="profile__grid">
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Persona</div>
+                    <div class="profile-kv__v" id="profilePersona">Balanced Builder</div>
+                  </div>
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Goal</div>
+                    <div class="profile-kv__v" id="profileGoal">Grow emergency fund</div>
+                  </div>
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Primary currency</div>
+                    <div class="profile-kv__v">INR</div>
+                  </div>
+                  <div class="profile-kv">
+                    <div class="profile-kv__k">Security</div>
+                    <div class="profile-kv__v">Local demo login</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="card reveal" aria-label="Edit profile">
+              <div class="card__head">
+                <div>
+                  <div class="card__eyebrow">Preferences</div>
+                  <div class="card__title">Update details</div>
+                </div>
+                <div class="hint">
+                  <i data-lucide="edit-3"></i>
+                  Local storage
+                </div>
+              </div>
+
+              <form class="form" id="profileForm">
+                <div class="field">
+                  <label class="field__label" for="profileNameInput">Full name</label>
+                  <input class="input" id="profileNameInput" type="text" placeholder="Your name" autocomplete="name" />
+                </div>
+                <div class="field">
+                  <label class="field__label" for="profileEmailInput">Email</label>
+                  <input class="input" id="profileEmailInput" type="email" placeholder="you@example.com" autocomplete="email" required />
+                </div>
+                <div class="form__actions">
+                  <button class="btn" id="btnSaveProfile" type="submit">
+                    <i data-lucide="save"></i>
+                    Save profile
+                  </button>
+                  <button class="btn btn--secondary" id="btnLogout" type="button">
+                    <i data-lucide="log-out"></i>
+                    Logout
+                  </button>
+                </div>
+                <div class="form__hint muted" id="profileSavedHint">Changes save to this browser only.</div>
+              </form>
+            </section>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <div class="footer__left">
+            <span class="muted">AI Money Coach</span>
+            <span class="sep">•</span>
+            <span class="muted">Hackathon-ready UI</span>
+          </div>
+          <div class="footer__right">
+            <span class="muted" id="buildStamp">—</span>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <!-- Libraries (CDN) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <script src="./app.js"></script>
+
+    <div class="toasts" id="toasts" aria-live="polite" aria-label="Notifications"></div>
+  </body>
+</html>
